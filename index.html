@@ -5,6 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>The Picklettes</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0e6e7d">
   <link rel="icon" href="images/logo.png" type="image/png">
   <link rel="apple-touch-icon" href="images/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1016,6 +1018,12 @@
         else { await navigator.clipboard.writeText(location.href); toast('Link copied'); }
       } catch (e) { }
     });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
   </script>
 </body>
 
