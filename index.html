@@ -33,8 +33,9 @@
     line-height:.98;font-size:clamp(38px,13vw,52px);letter-spacing:-.02em;margin:22px 0 8px}
   .lede{text-align:center;color:#e3f4f6;font-size:17px;font-weight:500;max-width:22ch;margin:0 auto}
 
-  .card{background:var(--card);border-radius:22px;margin-top:-18px;position:relative;z-index:2;
+  .card{background:var(--card);border-radius:22px;position:relative;z-index:2;
     padding:26px 22px;box-shadow:0 12px 34px rgba(14,110,125,.16)}
+  .card:first-of-type{margin-top:-18px}
   .add{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;border:none;
     cursor:pointer;text-decoration:none;background:var(--ball);color:var(--ink);
     font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;padding:18px 20px;
@@ -47,6 +48,12 @@
     font-weight:700;font-size:14px;display:grid;place-items:center;margin-top:1px}
 
   .roster-head{display:flex;align-items:center;justify-content:space-between;margin:34px 0 14px}
+  .roster-controls{display:flex;gap:6px;align-items:center}
+  .sort-toggle{background:none;border:1.5px solid #dbe7e4;border-radius:999px;color:var(--muted);
+    font-weight:600;font-size:12px;cursor:pointer;padding:5px 12px;display:inline-flex;gap:5px;
+    align-items:center;transition:.15s}
+  .sort-toggle svg{width:14px;height:14px}
+  .sort-toggle:active{background:#f0f8f7}
   .section-label{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:13px;
     letter-spacing:.16em;text-transform:uppercase;color:var(--court)}
   .edit-toggle{background:none;border:none;color:var(--court);font-weight:600;font-size:14px;
@@ -94,7 +101,11 @@
   .share-btn{display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--court);background:#fff;
     color:var(--court);font-weight:700;font-size:16px;padding:12px 22px;border-radius:999px;cursor:pointer}
 
-  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:30px;line-height:1.6}
+  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:16px;line-height:1.6}
+  .edit-bottom{text-align:center;margin-top:30px}
+  .add-card{margin-top:30px}
+  .edit-bottom .edit-toggle{border:1.5px solid #dbe7e4;border-radius:999px;padding:10px 20px;
+    font-size:15px;background:#fff}
   footer .net{color:var(--court);font-weight:600}
 
   #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
@@ -151,12 +162,15 @@
 
   <div class="wrap">
     <div class="card">
+
       <div class="roster-head">
         <span class="section-label">The roster</span>
-        <button class="edit-toggle" id="editToggle" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
-          <span id="editLabel">Edit list</span>
-        </button>
+        <div class="roster-controls">
+          <button class="sort-toggle" id="sortToggle" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h7M3 12h10M3 18h5M17 4v16m0 0 4-4m-4 4-4-4"/></svg>
+            <span id="sortLabel">Last</span>
+          </button>
+        </div>
       </div>
 
       <div class="edit-note">
@@ -180,7 +194,7 @@
 
     <div class="share">
       <div class="section-label" style="display:block;margin-bottom:14px">Pass it on</div>
-       <img src="data:image/png;base64,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" alt="QR code linking to this page">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATYAAAE2CAIAAABk3in+AAAF8UlEQVR4nO3dvZGkNRRAUYbaFEgBi/wjWYsUCKKxMVAvJd7q6utz3Kn+nb4l59XT1+v1+gWo+vX0GwBWJAppEoU0iUKaRCFNopAmUUiTKKRJFNK+rf/82+9//Jz38dP89ef3xV/Xn3fnsTvWr7t243/w1Pd8yvrzOkUhTaKQJlFIkyikSRTSJAppEoU0iUKaRCHtzXTR2s7Uy5y56ZOdZ577rube1c6s1VpzEmvOzud1ikKaRCFNopAmUUiTKKRJFNIkCmkShTSJQtrWdNHajRMkzYmZU9t6mt/Gjht/k05RSJMopEkU0iQKaRKFNIlCmkQhTaKQJlFIG5wuulFzD9CNe48+7XazOU5RSJMopEkU0iQKaRKFNIlCmkQhTaKQJlFIM130DzszMad2F+3MHp36vM37y5qcopAmUUiTKKRJFNIkCmkShTSJQppEIU2ikDY4XfS8CZK57USnHrs2t39o7j2v3fibdIpCmkQhTaKQJlFIkyikSRTSJAppEoU0iULa1nTR8+63OjX1csqNk0lrz/tNOkUhTaKQJlFIkyikSRTSJAppEoU0iUKaRCHtzXTR8+ZpdsxNrpyaxTn1ujs+7TfpFIU0iUKaRCFNopAmUUiTKKRJFNIkCmkShbQ300VzN3atNadtdjS3Ip2aH9r5vHPfZPPX7hSFNIlCmkQhTaKQJlFIkyikSRTSJAppEoW0r9frNfTUp6aLmo895cYZr1Oas2VOUUiTKKRJFNIkCmkShTSJQppEIU2ikCZRSHszXdScILHZ6Mcfu2Yi6v967NrO9+wUhTSJQppEIU2ikCZRSJMopEkU0iQKaRKFtK3dRZ+2y+d5mjeyPW/7lN1F8FgShTSJQppEIU2ikCZRSJMopEkU0iQKaYPTRWs7kxynthPduBVp7XmfaEdzC5RTFNIkCmkShTSJQppEIU2ikCZRSJMopEkU0rZuRpubELpx2ubUvFRzjud5v5xTk1hOUUiTKKRJFNIkCmkShTSJQppEIU2ikCZRSPu2/vPcrEZzCmRnd9Hc1Mup275O3SK387rPm9NyikKaRCFNopAmUUiTKKRJFNIkCmkShTSJQtrWzWhrp2ZT5m43a07qPG/26NTkWXOjklMU0iQKaRKFNIlCmkQhTaKQJlFIkyikSRTS3uwuOrUHaO6Z597V3OvO7T1quvE/OMcpCmkShTSJQppEIU2ikCZRSJMopEkU0iQKaVu7i5p7gOamT+acmj1au/F1m78Nu4vgsSQKaRKFNIlCmkQhTaKQJlFIkyikSRTS3kwXmS/5cc0b2eY0dzU1d2LtcIpCmkQhTaKQJlFIkyikSRTSJAppEoU0iULam5vRnjfXsqP5bayd2tXU3BF1I6copEkU0iQKaRKFNIlCmkQhTaKQJlFIkyikHbsZbUdzS9CN38aNt8g12V0EH0qikCZRSJMopEkU0iQKaRKFNIlCmkQhbWu66Hk+bZ6mOV106sa9U9af1ykKaRKFNIlCmkQhTaKQJlFIkyikSRTSJAppb25Ga05j7NiZXGlOvcztW2rOHjXvxZt7V05RSJMopEkU0iQKaRKFNIlCmkQhTaKQJlFIezNdtDY3ybFjbuplbgao+U3uaN5ed8rO7JFTFNIkCmkShTSJQppEIU2ikCZRSJMopEkU0rami9bmpnxu3E8zN0/TfOYdzRvZTv33naKQJlFIkyikSRTSJAppEoU0iUKaRCFNopA2OF10o7n7rXamT07ND83dubZjbo5nbn7IzWjwWBKFNIlCmkQhTaKQJlFIkyikSRTSJApppov+g+bEzKlpm7UbJ5PWTs0eOUUhTaKQJlFIkyikSRTSJAppEoU0iUKaRCFtcLpo7v6yOc2bwnac2riz1twRNffMdhfBY0kU0iQKaRKFNIlCmkQhTaKQJlFIkyikbU0X3Thts3bqprDmhqFTO5N23Pie15yikCZRSJMopEkU0iQKaRKFNIlCmkQhTaKQ9vV6vU6/B+BfOUUhTaKQJlFIkyikSRTSJAppEoU0iUKaRCHtbyfzLrYvOy7aAAAAAElFTkSuQmCC" alt="QR code linking to this page">
       <p>Point a phone camera at the code, or send the link to another player.</p>
       <button class="share-btn" id="share" type="button">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
@@ -188,7 +202,7 @@
       </button>
     </div>
 
-    <div class="card" style="margin-top:30px">
+    <div class="card add-card">
       <button class="add" id="addAll" type="button">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         Add all <span data-count>22</span> contacts
@@ -200,6 +214,13 @@
         <li><span class="num">2</span><span>Your phone opens the contact card.</span></li>
         <li><span class="num">3</span><span>Choose <strong>Add All Contacts</strong> — done.</span></li>
       </ol>
+    </div>
+
+    <div class="edit-bottom">
+      <button class="edit-toggle" id="editToggle" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        <span id="editLabel">Edit roster</span>
+      </button>
     </div>
 
     <footer>
@@ -227,6 +248,7 @@
   const PREFIX = "picklettes_";
   let CONTACTS = [{"first":"Barb","last":"Tongate","tel":"18168102055","email":"btongate@me.com"},{"first":"Beverly","last":"Cleveland","tel":"13148057248","email":"beverlyjcleveland@gmail.com"},{"first":"Cathy","last":"Morton","tel":"14173391128","email":"alandcathy82@gmail.com"},{"first":"Cindy","last":"Frenzel","tel":"14172096912","email":"ckfjaf@gmail.com"},{"first":"Debbie","last":"Page","tel":"14172394803","email":"debbiepage13@gmail.com"},{"first":"Dolores","last":"Coble","tel":"14172590224","email":"dolorescoble@me.com"},{"first":"Erica","last":"Holland","tel":"15152896263","email":"erica.abellholland@gmail.com"},{"first":"Jan","last":"Wolford","tel":"14026584220","email":"Janwolford4220@gmail.com"},{"first":"Julie","last":"Schrader","tel":"13168419205","email":"lefty.13@att.net"},{"first":"Karen","last":"Roof","tel":"19134813891","email":"kroof54@gmail.com"},{"first":"Karla","last":"Pankovits","tel":"14172947680","email":"karlatablerocklake@gmail.com"},{"first":"Kim","last":"Cahill","tel":"13143699043","email":"Kacahill26@gmail.com"},{"first":"Lissa","last":"Hamblen","tel":"14178183163","email":"newzstory@sbcglobal.net"},{"first":"Lori","last":"Konkol","tel":"14172945719","email":"lkonkol356@gmail.com"},{"first":"Lori","last":"Tuepker","tel":"13142490664","email":"latuepker@gmail.com"},{"first":"Marty","last":"Schmitt","tel":"14175980885","email":""},{"first":"Maureen","last":"Ellenberger","tel":"13145170358","email":"maureenellenberger@yahoo.com"},{"first":"Mindy","last":"Schroeder","tel":"14175980897","email":"eureka4me@outlook.com"},{"first":"Pam","last":"Collard","tel":"14178602796","email":"pam.collard@yahoo.com"},{"first":"Polly","last":"Linneman","tel":"14174969586","email":"Plinneman@yahoo.com"},{"first":"Rose","last":"Schwarte","tel":"14173316050","email":"roseschwarte@yahoo.com"},{"first":"Virginia","last":"Pennington","tel":"18168358906","email":"vlpenncarving@gmail.com"}];
   let editing = false;
+  let sortBy = 'last';   // 'last' or 'first'
 
   // ---- Database (Firebase Firestore) ----
   // Paste your Firebase web-app config below to turn on cloud sync.
@@ -291,6 +313,19 @@
   function telHref(t){ const d = digits(t); return '+' + (d.length===10 ? '1'+d : d); }
   const esc = s => (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
+  function sortedContacts(){
+    return [...CONTACTS].sort((a,b)=>{
+      const primary = sortBy === 'last' ? 'last' : 'first';
+      const secondary = sortBy === 'last' ? 'first' : 'last';
+      const ap = (a[primary]||'').trim().toLowerCase();
+      const bp = (b[primary]||'').trim().toLowerCase();
+      if(ap !== bp) return ap.localeCompare(bp);
+      const as = (a[secondary]||'').trim().toLowerCase();
+      const bs = (b[secondary]||'').trim().toLowerCase();
+      return as.localeCompare(bs);
+    });
+  }
+
   function viewRow(c){
     const full = `${c.first||''} ${c.last||''}`.trim();
     const tel = telHref(c.tel);
@@ -314,7 +349,8 @@
     </li>`;
   }
   function render(){
-    rosterEl.innerHTML = CONTACTS.map((c,i)=> editing ? editRow(c,i) : viewRow(c)).join('');
+    const list = editing ? CONTACTS : sortedContacts();
+    rosterEl.innerHTML = list.map((c,i)=> editing ? editRow(c,i) : viewRow(c)).join('');
     countEls.forEach(e=> e.textContent = CONTACTS.length);
     document.body.classList.toggle('editing', editing);
     document.getElementById('editLabel').textContent = editing ? 'Done' : 'Edit list';
@@ -347,7 +383,7 @@
 
   function buildVcf(){
     const NL = '\r\n';   // CRLF is required for iOS to import every card
-    return CONTACTS.filter(c => (c.first||c.last)).map(c=>{
+    return sortedContacts().filter(c => (c.first||c.last)).map(c=>{
       const last = (c.last||'').trim(), first = (c.first||'').trim();
       let v = 'BEGIN:VCARD'+NL+'VERSION:3.0'+NL;
       v += `N:${PREFIX}${last};${first};;;`+NL;
@@ -396,6 +432,13 @@
   document.getElementById('codeCancel').onclick = closeLock;
   codeInput.addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
   modal.addEventListener('click', e => { if(e.target === modal) closeLock(); });
+
+  // ---- sort toggle ----
+  document.getElementById('sortToggle').onclick = () => {
+    sortBy = sortBy === 'last' ? 'first' : 'last';
+    document.getElementById('sortLabel').textContent = sortBy === 'last' ? 'Last' : 'First';
+    render();
+  };
 
   // ---- add all contacts (built live, CRLF, so every card imports) ----
   document.getElementById('addAll').onclick = () => {
