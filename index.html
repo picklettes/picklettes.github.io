@@ -102,6 +102,24 @@
     opacity:0;pointer-events:none;transition:.25s;z-index:50}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+  .modal{position:fixed;inset:0;background:rgba(17,37,43,.55);display:none;align-items:center;
+    justify-content:center;z-index:60;padding:20px}
+  .modal.show{display:flex}
+  .modal-card{background:#fff;border-radius:18px;padding:26px 24px;max-width:340px;width:100%;
+    text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+  .modal-card h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;
+    margin-bottom:6px;color:var(--ink)}
+  .modal-card .sub{color:var(--muted);font-size:14px;margin-bottom:16px}
+  .modal-card input{width:100%;border:1.5px solid #dbe7e4;border-radius:11px;padding:13px;font-size:17px;
+    text-align:center;font-family:inherit;letter-spacing:.04em;color:var(--ink)}
+  .modal-card input:focus{outline:2px solid var(--court);outline-offset:0;border-color:var(--court)}
+  .modal-err{color:#c0392b;font-size:13px;font-weight:600;min-height:18px;margin-top:9px}
+  .modal-actions{display:flex;gap:10px;margin-top:12px}
+  .modal-actions button{flex:1;border-radius:999px;padding:12px;font-weight:700;font-size:15px;
+    cursor:pointer;border:1.5px solid var(--court)}
+  .modal-actions .cancel{background:#fff;color:var(--court)}
+  .modal-actions .go{background:var(--court);color:#fff}
+
   @media (prefers-reduced-motion:reduce){.ball{animation:none}}
 </style>
 </head>
@@ -188,6 +206,19 @@
     </footer>
   </div>
 
+  <div class="modal" id="lockModal">
+    <div class="modal-card">
+      <h3>Captains only</h3>
+      <p class="sub">Enter the passcode to edit the roster.</p>
+      <input id="codeInput" type="password" inputmode="text" placeholder="Passcode" autocomplete="off">
+      <div class="modal-err" id="codeErr"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="codeCancel" type="button">Cancel</button>
+        <button class="go" id="codeGo" type="button">Unlock</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast"></div>
 
 <script>
@@ -198,13 +229,12 @@
   // ---- Database (Firebase Firestore) ----
   // Paste your Firebase web-app config below to turn on cloud sync.
   const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyA6AxxSBkBhFBi_Bf94P-bE24b0x4WS9K8",
-  authDomain: "picklettes.firebaseapp.com",
-  projectId: "picklettes",
-  storageBucket: "picklettes.firebasestorage.app",
-  messagingSenderId: "1058013024748",
-  appId: "1:1058013024748:web:6e3106b1295d67d5e2b0c9",
-  measurementId: "G-C8WWNNKTX8"
+    apiKey:            "PASTE_API_KEY",
+    authDomain:        "PASTE_PROJECT.firebaseapp.com",
+    projectId:         "PASTE_PROJECT_ID",
+    storageBucket:     "PASTE_PROJECT.appspot.com",
+    messagingSenderId: "PASTE_SENDER_ID",
+    appId:             "PASTE_APP_ID"
   };
   let db = null;
   try{
@@ -233,6 +263,14 @@
         .set({ contacts: CONTACTS, updated: Date.now() });
       toast("Saved to cloud — everyone sees it now");
     }catch(e){ toast("Save failed — check Firestore rules"); console.warn(e); }
+  }
+  async function loadEditHash(){
+    if(!dbOn()) return;
+    try{
+      const snap = await db.collection("picklettes").doc("config").get();
+      const h = snap.exists && snap.data().editHash;
+      if(h) EXPECTED_HASH = h;
+    }catch(e){ console.warn("Passcode read failed:", e); }
   }
 
   const rosterEl = document.getElementById('roster');
@@ -281,6 +319,7 @@
 
   // load roster: database first, then the published file, then embedded fallback
   (async function load(){
+    await loadEditHash();
     if(!(await loadFromDB())){
       try{
         const r = await fetch('pickleballsbc.vcf', {cache:'no-store'});
@@ -327,6 +366,34 @@
     clearTimeout(toastT); toastT = setTimeout(()=> t.classList.remove('show'), 2200);
   }
 
+  // ---- passcode gate (hashed; change EDIT_HASH to set a new code) ----
+  // Generate a new hash in the browser console with:
+  //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_CODE'))
+  //     .then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+  const DEFAULT_HASH = "08fabc244ea6619234f70bfe693e86c5fd5cf576fb3f67b40860ef8912e2e7a0";  // bootstrap code, used until one is set in Firebase
+  let EXPECTED_HASH = DEFAULT_HASH;       // replaced by Firestore picklettes/config.editHash
+  let unlocked = false;
+  const modal = document.getElementById('lockModal');
+  const codeInput = document.getElementById('codeInput');
+  const codeErr = document.getElementById('codeErr');
+
+  async function sha256(s){
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2,'0')).join('');
+  }
+  function openLock(){ codeErr.textContent=''; codeInput.value=''; modal.classList.add('show'); setTimeout(()=>codeInput.focus(), 60); }
+  function closeLock(){ modal.classList.remove('show'); }
+  async function tryUnlock(){
+    const v = (codeInput.value||'').trim();
+    if(!v){ codeErr.textContent = 'Enter the passcode'; return; }
+    if(await sha256(v) === EXPECTED_HASH){ unlocked = true; closeLock(); editing = true; render(); }
+    else { codeErr.textContent = 'That passcode is not right'; codeInput.select(); }
+  }
+  document.getElementById('codeGo').onclick = tryUnlock;
+  document.getElementById('codeCancel').onclick = closeLock;
+  codeInput.addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
+  modal.addEventListener('click', e => { if(e.target === modal) closeLock(); });
+
   // ---- add all contacts (built live, CRLF, so every card imports) ----
   document.getElementById('addAll').onclick = () => {
     const url = vcfBlobUrl();
@@ -337,7 +404,11 @@
   };
 
   // ---- editing wiring ----
-  document.getElementById('editToggle').onclick = () => { editing = !editing; render(); };
+  document.getElementById('editToggle').onclick = () => {
+    if(editing){ editing = false; render(); return; }   // turn editing off
+    if(unlocked){ editing = true; render(); return; }    // already unlocked this session
+    openLock();                                          // ask for the passcode
+  };
   document.getElementById('saveCloud').onclick = saveToDB;
   document.getElementById('addPlayer').onclick = () => {
     CONTACTS.push({first:'',last:'',tel:'',email:''}); render();
