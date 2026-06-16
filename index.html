@@ -1,165 +1,662 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Picklettes — Add the roster to your phone</title>
-<link rel="icon" href="images/logo.png" type="image/png">
-<link rel="apple-touch-icon" href="images/logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<style>
-  :root{
-    --court:#0e6e7d; --kitchen:#0a5560; --line:#fff;
-    --ball:#d9ec4b; --ball-edge:#b9cc36;
-    --ink:#11252b; --muted:#5d7178; --bg:#eef3f1; --card:#fff;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{-webkit-text-size-adjust:100%}
-  body{font-family:"Inter",system-ui,sans-serif;background:var(--bg);color:var(--ink);
-    line-height:1.5;-webkit-font-smoothing:antialiased;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-  .wrap{max-width:460px;margin:0 auto;padding:0 20px 56px}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>The Picklettes — Add the roster to your phone</title>
+  <link rel="icon" href="images/logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --court: #0e6e7d;
+      --kitchen: #0a5560;
+      --line: #fff;
+      --ball: #d9ec4b;
+      --ball-edge: #b9cc36;
+      --ink: #11252b;
+      --muted: #5d7178;
+      --bg: #eef3f1;
+      --card: #fff;
+    }
 
-  .court-wrap{margin:0 -20px 0;padding:26px 20px 30px;position:relative;overflow:hidden;
-    background:radial-gradient(120% 80% at 50% -10%, #1b8294 0%, var(--court) 55%, #0c5d6a 100%)}
-  .eyebrow{display:flex;gap:8px;align-items:center;justify-content:center;color:#cfeef3;
-    font-weight:600;font-size:12px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px}
-  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--ball)}
-  .court-svg{display:block;width:min(170px,46vw);margin:0 auto;filter:drop-shadow(0 14px 22px rgba(0,0,0,.28))}
-  .ball{transform-origin:center;animation:bounce 2.4s cubic-bezier(.5,0,.5,1) infinite}
-  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
-  h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;color:#fff;text-align:center;
-    line-height:.98;font-size:clamp(38px,13vw,52px);letter-spacing:-.02em;margin:16px 0 8px}
-  .lede{text-align:center;color:#e3f4f6;font-size:17px;font-weight:500;max-width:22ch;margin:0 auto}
-  .main-logo{display:block;width:min(140px,40vw);margin:24px auto 0;filter:drop-shadow(0 10px 16px rgba(0,0,0,.25))}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-  .card{background:var(--card);border-radius:22px;position:relative;z-index:2;
-    padding:26px 22px;box-shadow:0 12px 34px rgba(14,110,125,.16)}
-  .card:first-of-type{margin-top:-18px}
-  .add{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;border:none;
-    cursor:pointer;text-decoration:none;background:var(--ball);color:var(--ink);
-    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;padding:18px 20px;
-    border-radius:16px;box-shadow:0 5px 0 var(--ball-edge);transition:transform .08s,box-shadow .08s}
-  .add:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ball-edge)}
-  .count{text-align:center;color:var(--muted);font-size:14px;margin-top:12px}
-  .steps{list-style:none;margin:22px 0 4px;display:grid;gap:14px}
-  .steps li{display:flex;gap:14px;align-items:flex-start;font-size:16px}
-  .steps .num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--court);color:#fff;
-    font-weight:700;font-size:14px;display:grid;place-items:center;margin-top:1px}
+    html {
+      -webkit-text-size-adjust: 100%
+    }
 
-  .roster-head{display:flex;align-items:center;justify-content:space-between;margin:34px 0 14px}
-  .roster-controls{display:flex;gap:6px;align-items:center}
-  .sort-toggle{background:none;border:1.5px solid #dbe7e4;border-radius:999px;color:var(--muted);
-    font-weight:600;font-size:12px;cursor:pointer;padding:5px 12px;display:inline-flex;gap:5px;
-    align-items:center;transition:.15s}
-  .sort-toggle svg{width:14px;height:14px}
-  .sort-toggle:active{background:#f0f8f7}
-  .section-label{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:13px;
-    letter-spacing:.16em;text-transform:uppercase;color:var(--court)}
-  .edit-toggle{background:none;border:none;color:var(--court);font-weight:600;font-size:14px;
-    cursor:pointer;display:inline-flex;gap:6px;align-items:center;padding:4px}
-  .edit-toggle svg{width:16px;height:16px}
+    body {
+      font-family: "Inter", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom)
+    }
 
-  .edit-bar{display:none;gap:9px;flex-wrap:wrap;justify-content:center;margin:0 0 16px}
-  body.editing .edit-bar{display:flex}
-  .ebtn{border:1.6px solid var(--court);background:#fff;color:var(--court);font-weight:700;font-size:14px;
-    padding:10px 16px;border-radius:999px;cursor:pointer;display:inline-flex;gap:7px;align-items:center}
-  .ebtn svg{width:16px;height:16px}
-  .ebtn.add-p{border-color:#0f7a4f;color:#0f7a4f}
-  .ebtn.dl{background:var(--court);color:#fff}
-  .ebtn.cloud{border-color:#1f6fb8;color:#1f6fb8}
-  .edit-note{display:none;background:#fff7e6;border:1px solid #f3e2b8;border-radius:12px;color:#7a5b16;
-    font-size:13px;line-height:1.5;padding:12px 14px;margin:0 0 16px}
-  body.editing .edit-note{display:block}
+    .wrap {
+      max-width: 460px;
+      margin: 0 auto;
+      padding: 0 20px 56px
+    }
 
-  .roster{list-style:none;display:grid;gap:8px}
-  .player{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid #dbe7e4;
-    border-radius:14px;padding:10px 10px 10px 16px}
-  .pname{flex:1;font-size:16px;font-weight:600;color:var(--ink)}
-  .acts{display:flex;gap:8px;flex:0 0 auto}
-  .act{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;text-decoration:none}
-  .act svg{width:20px;height:20px}
-  .act.call{background:#e7f4ee;color:#0f7a4f}
-  .act.text{background:#e9f1fb;color:#1f6fb8}
-  .act.mail{background:#fdf1e7;color:#c1762a}
-  .act.ghost{background:#f4f6f5;color:#cfd8d5}
+    .court-wrap {
+      margin: 0 -20px 0;
+      padding: 26px 20px 30px;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(120% 80% at 50% -10%, #1b8294 0%, var(--court) 55%, #0c5d6a 100%)
+    }
 
-  .player.edit{align-items:center}
-  .fields{flex:1;display:grid;gap:6px;min-width:0}
-  .fields .two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-  .fields input{border:1.5px solid #dbe7e4;border-radius:9px;padding:10px 11px;font-size:15px;
-    font-family:inherit;width:100%;color:var(--ink)}
-  .fields input:focus{outline:2px solid var(--court);outline-offset:0;border-color:var(--court)}
-  .del{flex:0 0 auto;width:40px;height:40px;border-radius:10px;border:none;background:#fdeaea;
-    color:#c0392b;cursor:pointer;display:grid;place-items:center}
-  .del svg{width:18px;height:18px}
+    .eyebrow {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      color: #cfeef3;
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      margin-bottom: 14px
+    }
 
-  .share{margin-top:30px;background:#fff;border-radius:22px;padding:24px 22px;text-align:center;
-    box-shadow:0 12px 34px rgba(14,110,125,.10)}
-  .share img{width:150px;height:150px;border-radius:12px;border:1px solid #e6efec}
-  .share p{color:var(--muted);font-size:14px;margin:14px auto 16px;max-width:26ch}
-  .share-btn{display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--court);background:#fff;
-    color:var(--court);font-weight:700;font-size:16px;padding:12px 22px;border-radius:999px;cursor:pointer}
+    .eyebrow .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--ball)
+    }
 
-  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:16px;line-height:1.6}
-  .edit-bottom{text-align:center;margin-top:30px}
-  .add-card{margin-top:30px}
-  .edit-bottom .edit-toggle{border:1.5px solid #dbe7e4;border-radius:999px;padding:10px 20px;
-    font-size:15px;background:#fff}
-  footer .net{color:var(--court);font-weight:600}
+    .court-svg {
+      display: block;
+      width: min(170px, 46vw);
+      margin: 0 auto;
+      filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .28))
+    }
 
-  #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
-    background:var(--ink);color:#fff;font-size:14px;font-weight:600;padding:12px 18px;border-radius:999px;
-    opacity:0;pointer-events:none;transition:.25s;z-index:50}
-  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .ball {
+      transform-origin: center;
+      animation: bounce 2.4s cubic-bezier(.5, 0, .5, 1) infinite
+    }
 
-  .modal{position:fixed;inset:0;background:rgba(17,37,43,.55);display:none;align-items:center;
-    justify-content:center;z-index:60;padding:20px}
-  .modal.show{display:flex}
-  .modal-card{background:#fff;border-radius:18px;padding:26px 24px;max-width:340px;width:100%;
-    text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3)}
-  .modal-card h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;
-    margin-bottom:6px;color:var(--ink)}
-  .modal-card .sub{color:var(--muted);font-size:14px;margin-bottom:16px}
-  .modal-card input{width:100%;border:1.5px solid #dbe7e4;border-radius:11px;padding:13px;font-size:17px;
-    text-align:center;font-family:inherit;letter-spacing:.04em;color:var(--ink)}
-  .modal-card input:focus{outline:2px solid var(--court);outline-offset:0;border-color:var(--court)}
-  .modal-err{color:#c0392b;font-size:13px;font-weight:600;min-height:18px;margin-top:9px}
-  .modal-actions{display:flex;gap:10px;margin-top:12px}
-  .modal-actions button{flex:1;border-radius:999px;padding:12px;font-weight:700;font-size:15px;
-    cursor:pointer;border:1.5px solid var(--court)}
-  .modal-actions .cancel{background:#fff;color:var(--court)}
-  .modal-actions .go{background:var(--court);color:#fff}
+    @keyframes bounce {
 
-  @media (prefers-reduced-motion:reduce){.ball{animation:none}}
-</style>
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-16px)
+      }
+    }
+
+    h1 {
+      font-family: "Bricolage Grotesque", sans-serif;
+      font-weight: 800;
+      color: #fff;
+      text-align: center;
+      line-height: .98;
+      font-size: clamp(38px, 13vw, 52px);
+      letter-spacing: -.02em;
+      margin: 16px 0 8px
+    }
+
+    .lede {
+      text-align: center;
+      color: #e3f4f6;
+      font-size: 17px;
+      font-weight: 500;
+      max-width: 22ch;
+      margin: 0 auto
+    }
+
+    .main-logo {
+      display: block;
+      width: min(140px, 40vw);
+      margin: 24px auto 0;
+      filter: drop-shadow(0 10px 16px rgba(0, 0, 0, .25))
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 22px;
+      position: relative;
+      z-index: 2;
+      padding: 26px 22px;
+      box-shadow: 0 12px 34px rgba(14, 110, 125, .16)
+    }
+
+    .card:first-of-type {
+      margin-top: -18px
+    }
+
+    .add {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      background: var(--ball);
+      color: var(--ink);
+      font-family: "Bricolage Grotesque", sans-serif;
+      font-weight: 800;
+      font-size: 21px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      box-shadow: 0 5px 0 var(--ball-edge);
+      transition: transform .08s, box-shadow .08s
+    }
+
+    .add:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 var(--ball-edge)
+    }
+
+    .count {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 12px
+    }
+
+    .steps {
+      list-style: none;
+      margin: 22px 0 4px;
+      display: grid;
+      gap: 14px
+    }
+
+    .steps li {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      font-size: 16px
+    }
+
+    .steps .num {
+      flex: 0 0 auto;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--court);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      display: grid;
+      place-items: center;
+      margin-top: 1px
+    }
+
+    .roster-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 34px 0 14px
+    }
+
+    .roster-controls {
+      display: flex;
+      gap: 6px;
+      align-items: center
+    }
+
+    .sort-toggle {
+      background: none;
+      border: 1.5px solid #dbe7e4;
+      border-radius: 999px;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 5px 12px;
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+      transition: .15s
+    }
+
+    .sort-toggle svg {
+      width: 14px;
+      height: 14px
+    }
+
+    .sort-toggle:active {
+      background: #f0f8f7
+    }
+
+    .section-label {
+      font-family: "Bricolage Grotesque", sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--court)
+    }
+
+    .edit-toggle {
+      background: none;
+      border: none;
+      color: var(--court);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      padding: 4px
+    }
+
+    .edit-toggle svg {
+      width: 16px;
+      height: 16px
+    }
+
+    .edit-bar {
+      display: none;
+      gap: 9px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0 0 16px
+    }
+
+    body.editing .edit-bar {
+      display: flex
+    }
+
+    .ebtn {
+      border: 1.6px solid var(--court);
+      background: #fff;
+      color: var(--court);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      gap: 7px;
+      align-items: center
+    }
+
+    .ebtn svg {
+      width: 16px;
+      height: 16px
+    }
+
+    .ebtn.add-p {
+      border-color: #0f7a4f;
+      color: #0f7a4f
+    }
+
+    .ebtn.dl {
+      background: var(--court);
+      color: #fff
+    }
+
+    .ebtn.cloud {
+      border-color: #1f6fb8;
+      color: #1f6fb8
+    }
+
+    .edit-note {
+      display: none;
+      background: #fff7e6;
+      border: 1px solid #f3e2b8;
+      border-radius: 12px;
+      color: #7a5b16;
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 12px 14px;
+      margin: 0 0 16px
+    }
+
+    body.editing .edit-note {
+      display: block
+    }
+
+    .roster {
+      list-style: none;
+      display: grid;
+      gap: 8px
+    }
+
+    .player {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #fff;
+      border: 1.5px solid #dbe7e4;
+      border-radius: 14px;
+      padding: 10px 10px 10px 16px
+    }
+
+    .pname {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink)
+    }
+
+    .acts {
+      display: flex;
+      gap: 8px;
+      flex: 0 0 auto
+    }
+
+    .act {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      text-decoration: none
+    }
+
+    .act svg {
+      width: 20px;
+      height: 20px
+    }
+
+    .act.call {
+      background: #e7f4ee;
+      color: #0f7a4f
+    }
+
+    .act.text {
+      background: #e9f1fb;
+      color: #1f6fb8
+    }
+
+    .act.mail {
+      background: #fdf1e7;
+      color: #c1762a
+    }
+
+    .act.ghost {
+      background: #f4f6f5;
+      color: #cfd8d5
+    }
+
+    .player.edit {
+      align-items: center
+    }
+
+    .fields {
+      flex: 1;
+      display: grid;
+      gap: 6px;
+      min-width: 0
+    }
+
+    .fields .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px
+    }
+
+    .fields input {
+      border: 1.5px solid #dbe7e4;
+      border-radius: 9px;
+      padding: 10px 11px;
+      font-size: 15px;
+      font-family: inherit;
+      width: 100%;
+      color: var(--ink)
+    }
+
+    .fields input:focus {
+      outline: 2px solid var(--court);
+      outline-offset: 0;
+      border-color: var(--court)
+    }
+
+    .del {
+      flex: 0 0 auto;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: none;
+      background: #fdeaea;
+      color: #c0392b;
+      cursor: pointer;
+      display: grid;
+      place-items: center
+    }
+
+    .del svg {
+      width: 18px;
+      height: 18px
+    }
+
+    .share {
+      margin-top: 30px;
+      background: #fff;
+      border-radius: 22px;
+      padding: 24px 22px;
+      text-align: center;
+      box-shadow: 0 12px 34px rgba(14, 110, 125, .10)
+    }
+
+    .share img {
+      width: 150px;
+      height: 150px;
+      border-radius: 12px;
+      border: 1px solid #e6efec
+    }
+
+    .share p {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 14px auto 16px;
+      max-width: 26ch
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      border: 1.5px solid var(--court);
+      background: #fff;
+      color: var(--court);
+      font-weight: 700;
+      font-size: 16px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      cursor: pointer
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 16px;
+      line-height: 1.6
+    }
+
+    .edit-bottom {
+      text-align: center;
+      margin-top: 30px
+    }
+
+    .add-card {
+      margin-top: 30px
+    }
+
+    .edit-bottom .edit-toggle {
+      border: 1.5px solid #dbe7e4;
+      border-radius: 999px;
+      padding: 10px 20px;
+      font-size: 15px;
+      background: #fff
+    }
+
+    footer .net {
+      color: var(--court);
+      font-weight: 600
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 18px;
+      border-radius: 999px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s;
+      z-index: 50
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0)
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 37, 43, .55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 60;
+      padding: 20px
+    }
+
+    .modal.show {
+      display: flex
+    }
+
+    .modal-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 26px 24px;
+      max-width: 340px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .3)
+    }
+
+    .modal-card h3 {
+      font-family: "Bricolage Grotesque", sans-serif;
+      font-weight: 800;
+      font-size: 21px;
+      margin-bottom: 6px;
+      color: var(--ink)
+    }
+
+    .modal-card .sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 16px
+    }
+
+    .modal-card input {
+      width: 100%;
+      border: 1.5px solid #dbe7e4;
+      border-radius: 11px;
+      padding: 13px;
+      font-size: 17px;
+      text-align: center;
+      font-family: inherit;
+      letter-spacing: .04em;
+      color: var(--ink)
+    }
+
+    .modal-card input:focus {
+      outline: 2px solid var(--court);
+      outline-offset: 0;
+      border-color: var(--court)
+    }
+
+    .modal-err {
+      color: #c0392b;
+      font-size: 13px;
+      font-weight: 600;
+      min-height: 18px;
+      margin-top: 9px
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px
+    }
+
+    .modal-actions button {
+      flex: 1;
+      border-radius: 999px;
+      padding: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      border: 1.5px solid var(--court)
+    }
+
+    .modal-actions .cancel {
+      background: #fff;
+      color: var(--court)
+    }
+
+    .modal-actions .go {
+      background: var(--court);
+      color: #fff
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      .ball {
+        animation: none
+      }
+    }
+  </style>
 </head>
+
 <body>
   <div class="court-wrap">
     <div class="eyebrow"><span class="dot"></span>Table Rock Lake<span class="dot"></span></div>
     <svg class="court-svg" viewBox="0 0 200 360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect x="0" y="0" width="200" height="360" rx="10" fill="var(--court)"/>
-      <rect x="14" y="138" width="172" height="40" fill="var(--kitchen)"/>
-      <rect x="14" y="182" width="172" height="40" fill="var(--kitchen)"/>
-      <rect x="14" y="14" width="172" height="332" fill="none" stroke="var(--line)" stroke-width="4"/>
-      <line x1="6" y1="180" x2="194" y2="180" stroke="var(--line)" stroke-width="5"/>
-      <line x1="14" y1="138" x2="186" y2="138" stroke="var(--line)" stroke-width="3"/>
-      <line x1="14" y1="222" x2="186" y2="222" stroke="var(--line)" stroke-width="3"/>
-      <line x1="100" y1="14" x2="100" y2="138" stroke="var(--line)" stroke-width="3"/>
-      <line x1="100" y1="222" x2="100" y2="346" stroke="var(--line)" stroke-width="3"/>
+      <rect x="0" y="0" width="200" height="360" rx="10" fill="var(--court)" />
+      <rect x="14" y="138" width="172" height="40" fill="var(--kitchen)" />
+      <rect x="14" y="182" width="172" height="40" fill="var(--kitchen)" />
+      <rect x="14" y="14" width="172" height="332" fill="none" stroke="var(--line)" stroke-width="4" />
+      <line x1="6" y1="180" x2="194" y2="180" stroke="var(--line)" stroke-width="5" />
+      <line x1="14" y1="138" x2="186" y2="138" stroke="var(--line)" stroke-width="3" />
+      <line x1="14" y1="222" x2="186" y2="222" stroke="var(--line)" stroke-width="3" />
+      <line x1="100" y1="14" x2="100" y2="138" stroke="var(--line)" stroke-width="3" />
+      <line x1="100" y1="222" x2="100" y2="346" stroke="var(--line)" stroke-width="3" />
       <g class="ball">
-        <circle cx="138" cy="108" r="17" fill="var(--ball)" stroke="var(--ball-edge)" stroke-width="2"/>
+        <circle cx="138" cy="108" r="17" fill="var(--ball)" stroke="var(--ball-edge)" stroke-width="2" />
         <g fill="#9aab2e">
-          <circle cx="131" cy="101" r="2.1"/><circle cx="142" cy="100" r="2.1"/>
-          <circle cx="146" cy="110" r="2.1"/><circle cx="137" cy="116" r="2.1"/>
-          <circle cx="128" cy="111" r="2.1"/><circle cx="139" cy="108" r="2.1"/>
+          <circle cx="131" cy="101" r="2.1" />
+          <circle cx="142" cy="100" r="2.1" />
+          <circle cx="146" cy="110" r="2.1" />
+          <circle cx="137" cy="116" r="2.1" />
+          <circle cx="128" cy="111" r="2.1" />
+          <circle cx="139" cy="108" r="2.1" />
         </g>
       </g>
     </svg>
-    <img src="images/logo.png" alt="The Picklettes Logo" class="main-logo">
     <h1>The Picklettes</h1>
     <p class="lede">Our whole roster, saved to your phone in one tap.</p>
   </div>
@@ -171,7 +668,10 @@
         <span class="section-label">The roster</span>
         <div class="roster-controls">
           <button class="sort-toggle" id="sortToggle" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h7M3 12h10M3 18h5M17 4v16m0 0 4-4m-4 4-4-4"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M3 6h7M3 12h10M3 18h5M17 4v16m0 0 4-4m-4 4-4-4" />
+            </svg>
             <span id="sortLabel">Last</span>
           </button>
         </div>
@@ -183,13 +683,23 @@
       </div>
       <div class="edit-bar">
         <button class="ebtn add-p" id="addPlayer" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Add player
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>Add player
         </button>
         <button class="ebtn dl" id="downloadVcf" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>Download .vcf
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" />
+          </svg>Download .vcf
         </button>
         <button class="ebtn cloud" id="saveCloud" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.3A5 5 0 0 0 7 9a4 4 0 0 0 .5 8H18a3.5 3.5 0 0 0 0-7z"/><path d="M12 11v5m0 0 2-2m-2 2-2-2"/></svg>Save to cloud
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M18 10h-1.3A5 5 0 0 0 7 9a4 4 0 0 0 .5 8H18a3.5 3.5 0 0 0 0-7z" />
+            <path d="M12 11v5m0 0 2-2m-2 2-2-2" />
+          </svg>Save to cloud
         </button>
       </div>
 
@@ -198,17 +708,28 @@
 
     <div class="share">
       <div class="section-label" style="display:block;margin-bottom:14px">Pass it on</div>
-      <img src="data:image/png;base64,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" alt="QR code linking to this page">
+      <img
+        src="data:image/png;base64,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"
+        alt="QR code linking to this page">
       <p>Point a phone camera at the code, or send the link to another player.</p>
       <button class="share-btn" id="share" type="button">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+        </svg>
         Share this page
       </button>
     </div>
 
     <div class="card add-card">
       <button class="add" id="addAll" type="button">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
         Add all <span data-count>22</span> contacts
       </button>
       <p class="count">Already have a few? Your phone skips the duplicates.</p>
@@ -222,7 +743,10 @@
 
     <div class="edit-bottom">
       <button class="edit-toggle" id="editToggle" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+        </svg>
         <span id="editLabel">Edit roster</span>
       </button>
     </div>
@@ -248,99 +772,99 @@
 
   <div id="toast"></div>
 
-<script>
-  const PREFIX = "picklettes_";
-  let CONTACTS = [{"first":"Barb","last":"Tongate","tel":"18168102055","email":"btongate@me.com"},{"first":"Beverly","last":"Cleveland","tel":"13148057248","email":"beverlyjcleveland@gmail.com"},{"first":"Cathy","last":"Morton","tel":"14173391128","email":"alandcathy82@gmail.com"},{"first":"Cindy","last":"Frenzel","tel":"14172096912","email":"ckfjaf@gmail.com"},{"first":"Debbie","last":"Page","tel":"14172394803","email":"debbiepage13@gmail.com"},{"first":"Dolores","last":"Coble","tel":"14172590224","email":"dolorescoble@me.com"},{"first":"Erica","last":"Holland","tel":"15152896263","email":"erica.abellholland@gmail.com"},{"first":"Jan","last":"Wolford","tel":"14026584220","email":"Janwolford4220@gmail.com"},{"first":"Julie","last":"Schrader","tel":"13168419205","email":"lefty.13@att.net"},{"first":"Karen","last":"Roof","tel":"19134813891","email":"kroof54@gmail.com"},{"first":"Karla","last":"Pankovits","tel":"14172947680","email":"karlatablerocklake@gmail.com"},{"first":"Kim","last":"Cahill","tel":"13143699043","email":"Kacahill26@gmail.com"},{"first":"Lissa","last":"Hamblen","tel":"14178183163","email":"newzstory@sbcglobal.net"},{"first":"Lori","last":"Konkol","tel":"14172945719","email":"lkonkol356@gmail.com"},{"first":"Lori","last":"Tuepker","tel":"13142490664","email":"latuepker@gmail.com"},{"first":"Marty","last":"Schmitt","tel":"14175980885","email":""},{"first":"Maureen","last":"Ellenberger","tel":"13145170358","email":"maureenellenberger@yahoo.com"},{"first":"Mindy","last":"Schroeder","tel":"14175980897","email":"eureka4me@outlook.com"},{"first":"Pam","last":"Collard","tel":"14178602796","email":"pam.collard@yahoo.com"},{"first":"Polly","last":"Linneman","tel":"14174969586","email":"Plinneman@yahoo.com"},{"first":"Rose","last":"Schwarte","tel":"14173316050","email":"roseschwarte@yahoo.com"},{"first":"Virginia","last":"Pennington","tel":"18168358906","email":"vlpenncarving@gmail.com"}];
-  let editing = false;
-  let sortBy = 'last';   // 'last' or 'first'
+  <script>
+    const PREFIX = "picklettes_";
+    let CONTACTS = [{ "first": "Barb", "last": "Tongate", "tel": "18168102055", "email": "btongate@me.com" }, { "first": "Beverly", "last": "Cleveland", "tel": "13148057248", "email": "beverlyjcleveland@gmail.com" }, { "first": "Cathy", "last": "Morton", "tel": "14173391128", "email": "alandcathy82@gmail.com" }, { "first": "Cindy", "last": "Frenzel", "tel": "14172096912", "email": "ckfjaf@gmail.com" }, { "first": "Debbie", "last": "Page", "tel": "14172394803", "email": "debbiepage13@gmail.com" }, { "first": "Dolores", "last": "Coble", "tel": "14172590224", "email": "dolorescoble@me.com" }, { "first": "Erica", "last": "Holland", "tel": "15152896263", "email": "erica.abellholland@gmail.com" }, { "first": "Jan", "last": "Wolford", "tel": "14026584220", "email": "Janwolford4220@gmail.com" }, { "first": "Julie", "last": "Schrader", "tel": "13168419205", "email": "lefty.13@att.net" }, { "first": "Karen", "last": "Roof", "tel": "19134813891", "email": "kroof54@gmail.com" }, { "first": "Karla", "last": "Pankovits", "tel": "14172947680", "email": "karlatablerocklake@gmail.com" }, { "first": "Kim", "last": "Cahill", "tel": "13143699043", "email": "Kacahill26@gmail.com" }, { "first": "Lissa", "last": "Hamblen", "tel": "14178183163", "email": "newzstory@sbcglobal.net" }, { "first": "Lori", "last": "Konkol", "tel": "14172945719", "email": "lkonkol356@gmail.com" }, { "first": "Lori", "last": "Tuepker", "tel": "13142490664", "email": "latuepker@gmail.com" }, { "first": "Marty", "last": "Schmitt", "tel": "14175980885", "email": "" }, { "first": "Maureen", "last": "Ellenberger", "tel": "13145170358", "email": "maureenellenberger@yahoo.com" }, { "first": "Mindy", "last": "Schroeder", "tel": "14175980897", "email": "eureka4me@outlook.com" }, { "first": "Pam", "last": "Collard", "tel": "14178602796", "email": "pam.collard@yahoo.com" }, { "first": "Polly", "last": "Linneman", "tel": "14174969586", "email": "Plinneman@yahoo.com" }, { "first": "Rose", "last": "Schwarte", "tel": "14173316050", "email": "roseschwarte@yahoo.com" }, { "first": "Virginia", "last": "Pennington", "tel": "18168358906", "email": "vlpenncarving@gmail.com" }];
+    let editing = false;
+    let sortBy = 'last';   // 'last' or 'first'
 
-  // ---- Database (Firebase Firestore) ----
-  // Paste your Firebase web-app config below to turn on cloud sync.
-  const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyA6AxxSBkBhFBi_Bf94P-bE24b0x4WS9K8",
-  authDomain: "picklettes.firebaseapp.com",
-  projectId: "picklettes",
-  storageBucket: "picklettes.firebasestorage.app",
-  messagingSenderId: "1058013024748",
-  appId: "1:1058013024748:web:6e3106b1295d67d5e2b0c9",
-  measurementId: "G-C8WWNNKTX8"
-  };
-  let db = null;
-  try{
-    if(window.firebase && !String(FIREBASE_CONFIG.projectId).startsWith("PASTE")){
-      firebase.initializeApp(FIREBASE_CONFIG);
-      db = firebase.firestore();
-    }
-  }catch(e){ console.warn("Firebase init skipped:", e); }
-  const dbOn = () => db !== null;
-
-  async function loadFromDB(){
-    if(!dbOn()) return false;
-    try{
-      const snap = await db.collection("picklettes").doc("roster").get();
-      if(snap.exists){
-        const arr = snap.data().contacts;
-        if(Array.isArray(arr) && arr.length){ CONTACTS = arr; return true; }
+    // ---- Database (Firebase Firestore) ----
+    // Paste your Firebase web-app config below to turn on cloud sync.
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyA6AxxSBkBhFBi_Bf94P-bE24b0x4WS9K8",
+      authDomain: "picklettes.firebaseapp.com",
+      projectId: "picklettes",
+      storageBucket: "picklettes.firebasestorage.app",
+      messagingSenderId: "1058013024748",
+      appId: "1:1058013024748:web:6e3106b1295d67d5e2b0c9",
+      measurementId: "G-C8WWNNKTX8"
+    };
+    let db = null;
+    try {
+      if (window.firebase && !String(FIREBASE_CONFIG.projectId).startsWith("PASTE")) {
+        firebase.initializeApp(FIREBASE_CONFIG);
+        db = firebase.firestore();
       }
-    }catch(e){ console.warn("DB read failed:", e); }
-    return false;
-  }
-  async function saveToDB(){
-    if(!dbOn()){ toast("Add your Firebase config to enable cloud save"); return; }
-    try{
-      await db.collection("picklettes").doc("roster")
-        .set({ contacts: CONTACTS, updated: Date.now() });
-      toast("Saved to cloud — everyone sees it now");
-    }catch(e){ toast("Save failed — check Firestore rules"); console.warn(e); }
-  }
-  async function loadEditHash(){
-    if(!dbOn()) return;
-    try{
-      const snap = await db.collection("picklettes").doc("config").get();
-      const h = snap.exists && snap.data().editHash;
-      if(h) EXPECTED_HASH = h;
-    }catch(e){ console.warn("Passcode read failed:", e); }
-  }
+    } catch (e) { console.warn("Firebase init skipped:", e); }
+    const dbOn = () => db !== null;
 
-  const rosterEl = document.getElementById('roster');
-  const countEls = document.querySelectorAll('[data-count]');
+    async function loadFromDB() {
+      if (!dbOn()) return false;
+      try {
+        const snap = await db.collection("picklettes").doc("roster").get();
+        if (snap.exists) {
+          const arr = snap.data().contacts;
+          if (Array.isArray(arr) && arr.length) { CONTACTS = arr; return true; }
+        }
+      } catch (e) { console.warn("DB read failed:", e); }
+      return false;
+    }
+    async function saveToDB() {
+      if (!dbOn()) { toast("Add your Firebase config to enable cloud save"); return; }
+      try {
+        await db.collection("picklettes").doc("roster")
+          .set({ contacts: CONTACTS, updated: Date.now() });
+        toast("Saved to cloud — everyone sees it now");
+      } catch (e) { toast("Save failed — check Firestore rules"); console.warn(e); }
+    }
+    async function loadEditHash() {
+      if (!dbOn()) return;
+      try {
+        const snap = await db.collection("picklettes").doc("config").get();
+        const h = snap.exists && snap.data().editHash;
+        if (h) EXPECTED_HASH = h;
+      } catch (e) { console.warn("Passcode read failed:", e); }
+    }
 
-  const IC = {
-    call:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
-    text:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>',
-    mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg>',
-    trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>'
-  };
+    const rosterEl = document.getElementById('roster');
+    const countEls = document.querySelectorAll('[data-count]');
 
-  const digits = t => (t||'').replace(/\D/g,'');
-  function fmtTel(t){ const d = digits(t).replace(/^1/,''); return d.length===10 ? `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}` : (t||''); }
-  function telHref(t){ const d = digits(t); return '+' + (d.length===10 ? '1'+d : d); }
-  const esc = s => (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const IC = {
+      call: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+      text: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>',
+      mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg>',
+      trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>'
+    };
 
-  function sortedContacts(){
-    return [...CONTACTS].sort((a,b)=>{
-      const primary = sortBy === 'last' ? 'last' : 'first';
-      const secondary = sortBy === 'last' ? 'first' : 'last';
-      const ap = (a[primary]||'').trim().toLowerCase();
-      const bp = (b[primary]||'').trim().toLowerCase();
-      if(ap !== bp) return ap.localeCompare(bp);
-      const as = (a[secondary]||'').trim().toLowerCase();
-      const bs = (b[secondary]||'').trim().toLowerCase();
-      return as.localeCompare(bs);
-    });
-  }
+    const digits = t => (t || '').replace(/\D/g, '');
+    function fmtTel(t) { const d = digits(t).replace(/^1/, ''); return d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : (t || ''); }
+    function telHref(t) { const d = digits(t); return '+' + (d.length === 10 ? '1' + d : d); }
+    const esc = s => (s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-  function viewRow(c){
-    const full = `${c.first||''} ${c.last||''}`.trim();
-    const tel = telHref(c.tel);
-    let acts = `<a class="act call" href="tel:${tel}" aria-label="Call ${esc(c.first)}">${IC.call}</a>`
-             + `<a class="act text" href="sms:${tel}" aria-label="Text ${esc(c.first)}">${IC.text}</a>`;
-    acts += c.email ? `<a class="act mail" href="mailto:${esc(c.email)}" aria-label="Email ${esc(c.first)}">${IC.mail}</a>`
-                    : `<span class="act ghost" aria-hidden="true">${IC.mail}</span>`;
-    return `<li class="player"><span class="pname">${esc(full)||'—'}</span><span class="acts">${acts}</span></li>`;
-  }
-  function editRow(c,i){
-    return `<li class="player edit">
+    function sortedContacts() {
+      return [...CONTACTS].sort((a, b) => {
+        const primary = sortBy === 'last' ? 'last' : 'first';
+        const secondary = sortBy === 'last' ? 'first' : 'last';
+        const ap = (a[primary] || '').trim().toLowerCase();
+        const bp = (b[primary] || '').trim().toLowerCase();
+        if (ap !== bp) return ap.localeCompare(bp);
+        const as = (a[secondary] || '').trim().toLowerCase();
+        const bs = (b[secondary] || '').trim().toLowerCase();
+        return as.localeCompare(bs);
+      });
+    }
+
+    function viewRow(c) {
+      const full = `${c.first || ''} ${c.last || ''}`.trim();
+      const tel = telHref(c.tel);
+      let acts = `<a class="act call" href="tel:${tel}" aria-label="Call ${esc(c.first)}">${IC.call}</a>`
+        + `<a class="act text" href="sms:${tel}" aria-label="Text ${esc(c.first)}">${IC.text}</a>`;
+      acts += c.email ? `<a class="act mail" href="mailto:${esc(c.email)}" aria-label="Email ${esc(c.first)}">${IC.mail}</a>`
+        : `<span class="act ghost" aria-hidden="true">${IC.mail}</span>`;
+      return `<li class="player"><span class="pname">${esc(full) || '—'}</span><span class="acts">${acts}</span></li>`;
+    }
+    function editRow(c, i) {
+      return `<li class="player edit">
       <div class="fields">
         <div class="two">
           <input data-i="${i}" data-f="first" placeholder="First" value="${esc(c.first)}" autocomplete="off">
@@ -351,147 +875,148 @@
       </div>
       <button class="del" data-del="${i}" type="button" aria-label="Remove player">${IC.trash}</button>
     </li>`;
-  }
-  function render(){
-    const list = editing ? CONTACTS : sortedContacts();
-    rosterEl.innerHTML = list.map((c,i)=> editing ? editRow(c,i) : viewRow(c)).join('');
-    countEls.forEach(e=> e.textContent = CONTACTS.length);
-    document.body.classList.toggle('editing', editing);
-    document.getElementById('editLabel').textContent = editing ? 'Done' : 'Edit list';
-  }
-
-  // load roster: database first, then the published file, then embedded fallback
-  (async function load(){
-    await loadEditHash();
-    if(!(await loadFromDB())){
-      try{
-        const r = await fetch('pickleballsbc.vcf', {cache:'no-store'});
-        if(r.ok){ const p = parseVcf(await r.text()); if(p.length) CONTACTS = p; }
-      }catch(e){ /* local preview / offline — use embedded list */ }
     }
-    render();
-  })();
+    function render() {
+      const list = editing ? CONTACTS : sortedContacts();
+      rosterEl.innerHTML = list.map((c, i) => editing ? editRow(c, i) : viewRow(c)).join('');
+      countEls.forEach(e => e.textContent = CONTACTS.length);
+      document.body.classList.toggle('editing', editing);
+      document.getElementById('editLabel').textContent = editing ? 'Done' : 'Edit list';
+    }
 
-  function parseVcf(text){
-    return text.split(/BEGIN:VCARD/i).slice(1).map(b=>{
-      const grab = re => { const m = b.match(re); return m ? m[1].trim() : ''; };
-      const parts = grab(/[\r\n]N:([^\r\n]*)/i).split(';');
-      const strip = s => (s||'').replace(new RegExp('^'+PREFIX), '');
-      return {
-        last: strip(parts[0]), first: strip(parts[1]),
-        tel: grab(/[\r\n]TEL[^:]*:([^\r\n]*)/i),
-        email: grab(/[\r\n]EMAIL[^:]*:([^\r\n]*)/i)
-      };
-    }).filter(c => c.first || c.last);
-  }
+    // load roster: database first, then the published file, then embedded fallback
+    (async function load() {
+      await loadEditHash();
+      if (!(await loadFromDB())) {
+        try {
+          const r = await fetch('pickleballsbc.vcf', { cache: 'no-store' });
+          if (r.ok) { const p = parseVcf(await r.text()); if (p.length) CONTACTS = p; }
+        } catch (e) { /* local preview / offline — use embedded list */ }
+      }
+      render();
+    })();
 
-  function buildVcf(){
-    const NL = '\r\n';   // CRLF is required for iOS to import every card
-    return sortedContacts().filter(c => (c.first||c.last)).map(c=>{
-      const last = (c.last||'').trim(), first = (c.first||'').trim();
-      let v = 'BEGIN:VCARD'+NL+'VERSION:3.0'+NL;
-      v += `N:${PREFIX}${last};${first};;;`+NL;
-      v += `FN:${(first+' '+PREFIX+last).trim()}`+NL;
-      if(digits(c.tel)) v += `TEL;TYPE=CELL:${fmtTel(c.tel)}`+NL;
-      if((c.email||'').trim()) v += `EMAIL;TYPE=INTERNET:${c.email.trim()}`+NL;
-      v += 'CATEGORIES:pickleballsbc'+NL+'END:VCARD';
-      return v;
-    }).join(NL) + NL;
-  }
-  function vcfBlobUrl(){
-    return URL.createObjectURL(new Blob([buildVcf()], {type:'text/vcard;charset=utf-8'}));
-  }
+    function parseVcf(text) {
+      return text.split(/BEGIN:VCARD/i).slice(1).map(b => {
+        const grab = re => { const m = b.match(re); return m ? m[1].trim() : ''; };
+        const parts = grab(/[\r\n]N:([^\r\n]*)/i).split(';');
+        const strip = s => (s || '').replace(new RegExp('^' + PREFIX), '');
+        return {
+          last: strip(parts[0]), first: strip(parts[1]),
+          tel: grab(/[\r\n]TEL[^:]*:([^\r\n]*)/i),
+          email: grab(/[\r\n]EMAIL[^:]*:([^\r\n]*)/i)
+        };
+      }).filter(c => c.first || c.last);
+    }
 
-  let toastT;
-  function toast(msg){
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    clearTimeout(toastT); toastT = setTimeout(()=> t.classList.remove('show'), 2200);
-  }
+    function buildVcf() {
+      const NL = '\r\n';   // CRLF is required for iOS to import every card
+      return sortedContacts().filter(c => (c.first || c.last)).map(c => {
+        const last = (c.last || '').trim(), first = (c.first || '').trim();
+        let v = 'BEGIN:VCARD' + NL + 'VERSION:3.0' + NL;
+        v += `N:${PREFIX}${last};${first};;;` + NL;
+        v += `FN:${(first + ' ' + PREFIX + last).trim()}` + NL;
+        if (digits(c.tel)) v += `TEL;TYPE=CELL:${fmtTel(c.tel)}` + NL;
+        if ((c.email || '').trim()) v += `EMAIL;TYPE=INTERNET:${c.email.trim()}` + NL;
+        v += 'CATEGORIES:pickleballsbc' + NL + 'END:VCARD';
+        return v;
+      }).join(NL) + NL;
+    }
+    function vcfBlobUrl() {
+      return URL.createObjectURL(new Blob([buildVcf()], { type: 'text/vcard;charset=utf-8' }));
+    }
 
-  // ---- passcode gate (hashed; change EDIT_HASH to set a new code) ----
-  // Generate a new hash in the browser console with:
-  //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_CODE'))
-  //     .then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
-  const DEFAULT_HASH = "08fabc244ea6619234f70bfe693e86c5fd5cf576fb3f67b40860ef8912e2e7a0";  // bootstrap code, used until one is set in Firebase
-  let EXPECTED_HASH = DEFAULT_HASH;       // replaced by Firestore picklettes/config.editHash
-  let unlocked = false;
-  const modal = document.getElementById('lockModal');
-  const codeInput = document.getElementById('codeInput');
-  const codeErr = document.getElementById('codeErr');
+    let toastT;
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200);
+    }
 
-  async function sha256(s){
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-    return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2,'0')).join('');
-  }
-  function openLock(){ codeErr.textContent=''; codeInput.value=''; modal.classList.add('show'); setTimeout(()=>codeInput.focus(), 60); }
-  function closeLock(){ modal.classList.remove('show'); }
-  async function tryUnlock(){
-    const v = (codeInput.value||'').trim();
-    if(!v){ codeErr.textContent = 'Enter the passcode'; return; }
-    if(await sha256(v) === EXPECTED_HASH){ unlocked = true; closeLock(); editing = true; render(); }
-    else { codeErr.textContent = 'That passcode is not right'; codeInput.select(); }
-  }
-  document.getElementById('codeGo').onclick = tryUnlock;
-  document.getElementById('codeCancel').onclick = closeLock;
-  codeInput.addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
-  modal.addEventListener('click', e => { if(e.target === modal) closeLock(); });
+    // ---- passcode gate (hashed; change EDIT_HASH to set a new code) ----
+    // Generate a new hash in the browser console with:
+    //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_CODE'))
+    //     .then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+    const DEFAULT_HASH = "08fabc244ea6619234f70bfe693e86c5fd5cf576fb3f67b40860ef8912e2e7a0";  // bootstrap code, used until one is set in Firebase
+    let EXPECTED_HASH = DEFAULT_HASH;       // replaced by Firestore picklettes/config.editHash
+    let unlocked = false;
+    const modal = document.getElementById('lockModal');
+    const codeInput = document.getElementById('codeInput');
+    const codeErr = document.getElementById('codeErr');
 
-  // ---- sort toggle ----
-  document.getElementById('sortToggle').onclick = () => {
-    sortBy = sortBy === 'last' ? 'first' : 'last';
-    document.getElementById('sortLabel').textContent = sortBy === 'last' ? 'Last' : 'First';
-    render();
-  };
+    async function sha256(s) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+      return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
+    }
+    function openLock() { codeErr.textContent = ''; codeInput.value = ''; modal.classList.add('show'); setTimeout(() => codeInput.focus(), 60); }
+    function closeLock() { modal.classList.remove('show'); }
+    async function tryUnlock() {
+      const v = (codeInput.value || '').trim();
+      if (!v) { codeErr.textContent = 'Enter the passcode'; return; }
+      if (await sha256(v) === EXPECTED_HASH) { unlocked = true; closeLock(); editing = true; render(); }
+      else { codeErr.textContent = 'That passcode is not right'; codeInput.select(); }
+    }
+    document.getElementById('codeGo').onclick = tryUnlock;
+    document.getElementById('codeCancel').onclick = closeLock;
+    codeInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+    modal.addEventListener('click', e => { if (e.target === modal) closeLock(); });
 
-  // ---- add all contacts (built live, CRLF, so every card imports) ----
-  document.getElementById('addAll').onclick = () => {
-    const url = vcfBlobUrl();
-    const a = document.createElement('a');
-    a.href = url; a.download = 'pickleballsbc.vcf';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(()=> URL.revokeObjectURL(url), 2000);
-  };
+    // ---- sort toggle ----
+    document.getElementById('sortToggle').onclick = () => {
+      sortBy = sortBy === 'last' ? 'first' : 'last';
+      document.getElementById('sortLabel').textContent = sortBy === 'last' ? 'Last' : 'First';
+      render();
+    };
 
-  // ---- editing wiring ----
-  document.getElementById('editToggle').onclick = () => {
-    if(editing){ editing = false; render(); return; }   // turn editing off
-    if(unlocked){ editing = true; render(); return; }    // already unlocked this session
-    openLock();                                          // ask for the passcode
-  };
-  document.getElementById('saveCloud').onclick = saveToDB;
-  document.getElementById('addPlayer').onclick = () => {
-    CONTACTS.push({first:'',last:'',tel:'',email:''}); render();
-    const inputs = rosterEl.querySelectorAll('input[data-f="first"]');
-    if(inputs.length) inputs[inputs.length-1].focus();
-    window.scrollBy({top:120, behavior:'smooth'});
-  };
-  document.getElementById('downloadVcf').onclick = () => {
-    const blob = new Blob([buildVcf()], {type:'text/vcard'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'pickleballsbc.vcf'; a.click();
-    setTimeout(()=> URL.revokeObjectURL(url), 1500);
-    toast('Downloaded pickleballsbc.vcf');
-  };
-  rosterEl.addEventListener('input', e => {
-    const t = e.target; if(t.dataset.i === undefined) return;
-    CONTACTS[+t.dataset.i][t.dataset.f] = t.value;
-    countEls.forEach(e=> e.textContent = CONTACTS.length);
-  });
-  rosterEl.addEventListener('click', e => {
-    const b = e.target.closest('[data-del]'); if(!b) return;
-    CONTACTS.splice(+b.dataset.del, 1); render();
-  });
+    // ---- add all contacts (built live, CRLF, so every card imports) ----
+    document.getElementById('addAll').onclick = () => {
+      const url = vcfBlobUrl();
+      const a = document.createElement('a');
+      a.href = url; a.download = 'pickleballsbc.vcf';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    };
 
-  // ---- share ----
-  const sbtn = document.getElementById('share');
-  sbtn.addEventListener('click', async () => {
-    const data = { title:'The Picklettes', text:'Add the Picklettes roster to your phone', url: location.href };
-    try{
-      if(navigator.share){ await navigator.share(data); }
-      else { await navigator.clipboard.writeText(location.href); toast('Link copied'); }
-    }catch(e){}
-  });
-</script>
+    // ---- editing wiring ----
+    document.getElementById('editToggle').onclick = () => {
+      if (editing) { editing = false; render(); return; }   // turn editing off
+      if (unlocked) { editing = true; render(); return; }    // already unlocked this session
+      openLock();                                          // ask for the passcode
+    };
+    document.getElementById('saveCloud').onclick = saveToDB;
+    document.getElementById('addPlayer').onclick = () => {
+      CONTACTS.push({ first: '', last: '', tel: '', email: '' }); render();
+      const inputs = rosterEl.querySelectorAll('input[data-f="first"]');
+      if (inputs.length) inputs[inputs.length - 1].focus();
+      window.scrollBy({ top: 120, behavior: 'smooth' });
+    };
+    document.getElementById('downloadVcf').onclick = () => {
+      const blob = new Blob([buildVcf()], { type: 'text/vcard' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'pickleballsbc.vcf'; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      toast('Downloaded pickleballsbc.vcf');
+    };
+    rosterEl.addEventListener('input', e => {
+      const t = e.target; if (t.dataset.i === undefined) return;
+      CONTACTS[+t.dataset.i][t.dataset.f] = t.value;
+      countEls.forEach(e => e.textContent = CONTACTS.length);
+    });
+    rosterEl.addEventListener('click', e => {
+      const b = e.target.closest('[data-del]'); if (!b) return;
+      CONTACTS.splice(+b.dataset.del, 1); render();
+    });
+
+    // ---- share ----
+    const sbtn = document.getElementById('share');
+    sbtn.addEventListener('click', async () => {
+      const data = { title: 'The Picklettes', text: 'Add the Picklettes roster to your phone', url: location.href };
+      try {
+        if (navigator.share) { await navigator.share(data); }
+        else { await navigator.clipboard.writeText(location.href); toast('Link copied'); }
+      } catch (e) { }
+    });
+  </script>
 </body>
+
 </html>
