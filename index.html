@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Picklettes — Add the roster to your phone</title>
+<link rel="icon" href="images/logo.png" type="image/png">
+<link rel="apple-touch-icon" href="images/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,8 +32,9 @@
   .ball{transform-origin:center;animation:bounce 2.4s cubic-bezier(.5,0,.5,1) infinite}
   @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
   h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;color:#fff;text-align:center;
-    line-height:.98;font-size:clamp(38px,13vw,52px);letter-spacing:-.02em;margin:22px 0 8px}
+    line-height:.98;font-size:clamp(38px,13vw,52px);letter-spacing:-.02em;margin:16px 0 8px}
   .lede{text-align:center;color:#e3f4f6;font-size:17px;font-weight:500;max-width:22ch;margin:0 auto}
+  .main-logo{display:block;width:min(140px,40vw);margin:24px auto 0;filter:drop-shadow(0 10px 16px rgba(0,0,0,.25))}
 
   .card{background:var(--card);border-radius:22px;position:relative;z-index:2;
     padding:26px 22px;box-shadow:0 12px 34px rgba(14,110,125,.16)}
@@ -156,6 +159,7 @@
         </g>
       </g>
     </svg>
+    <img src="images/logo.png" alt="The Picklettes Logo" class="main-logo">
     <h1>The Picklettes</h1>
     <p class="lede">Our whole roster, saved to your phone in one tap.</p>
   </div>
