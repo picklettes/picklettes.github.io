@@ -7,126 +7,100 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
   :root{
-    --court:#0e6e7d;          /* deep court teal      */
-    --kitchen:#0a5560;        /* non-volley zone      */
-    --line:#ffffff;           /* court lines          */
-    --ball:#d9ec4b;           /* optic-yellow ball    */
-    --ball-edge:#b9cc36;
-    --ink:#11252b;            /* text                 */
-    --muted:#5d7178;
-    --bg:#eef3f1;             /* court-surface grey    */
-    --card:#ffffff;
+    --court:#0e6e7d; --kitchen:#0a5560; --line:#fff;
+    --ball:#d9ec4b; --ball-edge:#b9cc36;
+    --ink:#11252b; --muted:#5d7178; --bg:#eef3f1; --card:#fff;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
-  body{
-    font-family:"Inter",system-ui,sans-serif;
-    background:var(--bg);
-    color:var(--ink);
-    line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
-  }
+  body{font-family:"Inter",system-ui,sans-serif;background:var(--bg);color:var(--ink);
+    line-height:1.5;-webkit-font-smoothing:antialiased;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
   .wrap{max-width:460px;margin:0 auto;padding:0 20px 56px}
 
-  /* ---------- HERO: a court seen from above ---------- */
-  .court-wrap{
-    margin:0 -20px 0;
-    padding:26px 20px 30px;
-    background:
-      radial-gradient(120% 80% at 50% -10%, #1b8294 0%, var(--court) 55%, #0c5d6a 100%);
-    position:relative;overflow:hidden;
-  }
-  .eyebrow{
-    display:flex;gap:8px;align-items:center;justify-content:center;
-    color:#cfeef3;font-weight:600;font-size:12px;letter-spacing:.18em;
-    text-transform:uppercase;margin-bottom:14px;
-  }
+  .court-wrap{margin:0 -20px 0;padding:26px 20px 30px;position:relative;overflow:hidden;
+    background:radial-gradient(120% 80% at 50% -10%, #1b8294 0%, var(--court) 55%, #0c5d6a 100%)}
+  .eyebrow{display:flex;gap:8px;align-items:center;justify-content:center;color:#cfeef3;
+    font-weight:600;font-size:12px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px}
   .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--ball)}
   .court-svg{display:block;width:min(170px,46vw);margin:0 auto;filter:drop-shadow(0 14px 22px rgba(0,0,0,.28))}
   .ball{transform-origin:center;animation:bounce 2.4s cubic-bezier(.5,0,.5,1) infinite}
-  @keyframes bounce{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(-16px)}
-  }
-  h1{
-    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
-    color:#fff;text-align:center;line-height:.98;
-    font-size:clamp(38px,13vw,52px);letter-spacing:-.02em;margin:22px 0 8px;
-  }
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+  h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;color:#fff;text-align:center;
+    line-height:.98;font-size:clamp(38px,13vw,52px);letter-spacing:-.02em;margin:22px 0 8px}
   .lede{text-align:center;color:#e3f4f6;font-size:17px;font-weight:500;max-width:22ch;margin:0 auto}
 
-  /* ---------- ACTION CARD ---------- */
-  .card{
-    background:var(--card);border-radius:22px;margin-top:-18px;position:relative;z-index:2;
-    padding:26px 22px;box-shadow:0 12px 34px rgba(14,110,125,.16);
-  }
-  .add{
-    display:flex;align-items:center;justify-content:center;gap:12px;
-    width:100%;border:none;cursor:pointer;text-decoration:none;
-    background:var(--ball);color:var(--ink);
-    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;
-    padding:18px 20px;border-radius:16px;
-    box-shadow:0 5px 0 var(--ball-edge);
-    transition:transform .08s ease, box-shadow .08s ease;
-  }
+  .card{background:var(--card);border-radius:22px;margin-top:-18px;position:relative;z-index:2;
+    padding:26px 22px;box-shadow:0 12px 34px rgba(14,110,125,.16)}
+  .add{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;border:none;
+    cursor:pointer;text-decoration:none;background:var(--ball);color:var(--ink);
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;padding:18px 20px;
+    border-radius:16px;box-shadow:0 5px 0 var(--ball-edge);transition:transform .08s,box-shadow .08s}
   .add:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ball-edge)}
-  .add svg{flex:0 0 auto}
   .count{text-align:center;color:var(--muted);font-size:14px;margin-top:12px}
-
   .steps{list-style:none;margin:22px 0 4px;display:grid;gap:14px}
   .steps li{display:flex;gap:14px;align-items:flex-start;font-size:16px}
-  .steps .num{
-    flex:0 0 auto;width:26px;height:26px;border-radius:50%;
-    background:var(--court);color:#fff;font-weight:700;font-size:14px;
-    display:grid;place-items:center;margin-top:1px;
-  }
+  .steps .num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--court);color:#fff;
+    font-weight:700;font-size:14px;display:grid;place-items:center;margin-top:1px}
 
-  /* ---------- ROSTER ---------- */
-  .section-label{
-    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
-    font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--court);
-    margin:34px 0 14px;text-align:center;
-  }
+  .roster-head{display:flex;align-items:center;justify-content:space-between;margin:34px 0 14px}
+  .section-label{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:13px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--court)}
+  .edit-toggle{background:none;border:none;color:var(--court);font-weight:600;font-size:14px;
+    cursor:pointer;display:inline-flex;gap:6px;align-items:center;padding:4px}
+  .edit-toggle svg{width:16px;height:16px}
+
+  .edit-bar{display:none;gap:9px;flex-wrap:wrap;justify-content:center;margin:0 0 16px}
+  body.editing .edit-bar{display:flex}
+  .ebtn{border:1.6px solid var(--court);background:#fff;color:var(--court);font-weight:700;font-size:14px;
+    padding:10px 16px;border-radius:999px;cursor:pointer;display:inline-flex;gap:7px;align-items:center}
+  .ebtn svg{width:16px;height:16px}
+  .ebtn.add-p{border-color:#0f7a4f;color:#0f7a4f}
+  .ebtn.dl{background:var(--court);color:#fff}
+  .ebtn.cloud{border-color:#1f6fb8;color:#1f6fb8}
+  .edit-note{display:none;background:#fff7e6;border:1px solid #f3e2b8;border-radius:12px;color:#7a5b16;
+    font-size:13px;line-height:1.5;padding:12px 14px;margin:0 0 16px}
+  body.editing .edit-note{display:block}
+
   .roster{list-style:none;display:grid;gap:8px}
-  .player{
-    display:flex;align-items:center;gap:12px;
-    background:#fff;border:1.5px solid #dbe7e4;border-radius:14px;
-    padding:10px 10px 10px 16px;
-  }
+  .player{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid #dbe7e4;
+    border-radius:14px;padding:10px 10px 10px 16px}
   .pname{flex:1;font-size:16px;font-weight:600;color:var(--ink)}
   .acts{display:flex;gap:8px;flex:0 0 auto}
-  .act{
-    width:42px;height:42px;border-radius:11px;display:grid;place-items:center;
-    text-decoration:none;
-  }
+  .act{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;text-decoration:none}
   .act svg{width:20px;height:20px}
   .act.call{background:#e7f4ee;color:#0f7a4f}
   .act.text{background:#e9f1fb;color:#1f6fb8}
   .act.mail{background:#fdf1e7;color:#c1762a}
-  .act.call:active{background:#d3ecdf}
-  .act.text:active{background:#d6e6f7}
-  .act.mail:active{background:#f8e4cf}
   .act.ghost{background:#f4f6f5;color:#cfd8d5}
 
-  /* ---------- SHARE ---------- */
-  .share{
-    margin-top:30px;background:#fff;border-radius:22px;padding:24px 22px;text-align:center;
-    box-shadow:0 12px 34px rgba(14,110,125,.10);
-  }
+  .player.edit{align-items:center}
+  .fields{flex:1;display:grid;gap:6px;min-width:0}
+  .fields .two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .fields input{border:1.5px solid #dbe7e4;border-radius:9px;padding:10px 11px;font-size:15px;
+    font-family:inherit;width:100%;color:var(--ink)}
+  .fields input:focus{outline:2px solid var(--court);outline-offset:0;border-color:var(--court)}
+  .del{flex:0 0 auto;width:40px;height:40px;border-radius:10px;border:none;background:#fdeaea;
+    color:#c0392b;cursor:pointer;display:grid;place-items:center}
+  .del svg{width:18px;height:18px}
+
+  .share{margin-top:30px;background:#fff;border-radius:22px;padding:24px 22px;text-align:center;
+    box-shadow:0 12px 34px rgba(14,110,125,.10)}
   .share img{width:150px;height:150px;border-radius:12px;border:1px solid #e6efec}
   .share p{color:var(--muted);font-size:14px;margin:14px auto 16px;max-width:26ch}
-  .share-btn{
-    display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--court);
-    background:#fff;color:var(--court);font-weight:700;font-size:16px;
-    padding:12px 22px;border-radius:999px;cursor:pointer;
-  }
-  .share-btn:active{background:#f0f8f7}
+  .share-btn{display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--court);background:#fff;
+    color:var(--court);font-weight:700;font-size:16px;padding:12px 22px;border-radius:999px;cursor:pointer}
 
   footer{text-align:center;color:var(--muted);font-size:13px;margin-top:30px;line-height:1.6}
   footer .net{color:var(--court);font-weight:600}
+
+  #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;font-size:14px;font-weight:600;padding:12px 18px;border-radius:999px;
+    opacity:0;pointer-events:none;transition:.25s;z-index:50}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
   @media (prefers-reduced-motion:reduce){.ball{animation:none}}
 </style>
@@ -135,22 +109,15 @@
   <div class="court-wrap">
     <div class="eyebrow"><span class="dot"></span>Table Rock Lake<span class="dot"></span></div>
     <svg class="court-svg" viewBox="0 0 200 360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <!-- playing surface -->
       <rect x="0" y="0" width="200" height="360" rx="10" fill="var(--court)"/>
-      <!-- kitchen / non-volley zones -->
       <rect x="14" y="138" width="172" height="40" fill="var(--kitchen)"/>
       <rect x="14" y="182" width="172" height="40" fill="var(--kitchen)"/>
-      <!-- boundary -->
       <rect x="14" y="14" width="172" height="332" fill="none" stroke="var(--line)" stroke-width="4"/>
-      <!-- net line -->
       <line x1="6" y1="180" x2="194" y2="180" stroke="var(--line)" stroke-width="5"/>
-      <!-- kitchen lines -->
       <line x1="14" y1="138" x2="186" y2="138" stroke="var(--line)" stroke-width="3"/>
       <line x1="14" y1="222" x2="186" y2="222" stroke="var(--line)" stroke-width="3"/>
-      <!-- service centerlines (not through kitchen) -->
       <line x1="100" y1="14" x2="100" y2="138" stroke="var(--line)" stroke-width="3"/>
       <line x1="100" y1="222" x2="100" y2="346" stroke="var(--line)" stroke-width="3"/>
-      <!-- ball -->
       <g class="ball">
         <circle cx="138" cy="108" r="17" fill="var(--ball)" stroke="var(--ball-edge)" stroke-width="2"/>
         <g fill="#9aab2e">
@@ -166,10 +133,10 @@
 
   <div class="wrap">
     <div class="card">
-      <a class="add" href="pickleballsbc.vcf" download>
+      <button class="add" id="addAll" type="button">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-        Add all 22 contacts
-      </a>
+        Add all <span data-count>22</span> contacts
+      </button>
       <p class="count">Already have a few? Your phone skips the duplicates.</p>
 
       <ol class="steps">
@@ -178,35 +145,35 @@
         <li><span class="num">3</span><span>Choose <strong>Add All Contacts</strong> — done.</span></li>
       </ol>
 
-      <div class="section-label">The roster</div>
-      <ul class="roster">
-          <li class="player"><span class="pname">Barb Tongate</span><span class="acts"><a class="act call" href="tel:+18168102055" aria-label="Call Barb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+18168102055" aria-label="Text Barb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:btongate@me.com" aria-label="Email Barb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Beverly Cleveland</span><span class="acts"><a class="act call" href="tel:+13148057248" aria-label="Call Beverly"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+13148057248" aria-label="Text Beverly"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:beverlyjcleveland@gmail.com" aria-label="Email Beverly"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Cathy Morton</span><span class="acts"><a class="act call" href="tel:+14173391128" aria-label="Call Cathy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14173391128" aria-label="Text Cathy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:alandcathy82@gmail.com" aria-label="Email Cathy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Cindy Frenzel</span><span class="acts"><a class="act call" href="tel:+14172096912" aria-label="Call Cindy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14172096912" aria-label="Text Cindy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:ckfjaf@gmail.com" aria-label="Email Cindy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Debbie Page</span><span class="acts"><a class="act call" href="tel:+14172394803" aria-label="Call Debbie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14172394803" aria-label="Text Debbie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:debbiepage13@gmail.com" aria-label="Email Debbie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Dolores Coble</span><span class="acts"><a class="act call" href="tel:+14172590224" aria-label="Call Dolores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14172590224" aria-label="Text Dolores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:dolorescoble@me.com" aria-label="Email Dolores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Erica Holland</span><span class="acts"><a class="act call" href="tel:+15152896263" aria-label="Call Erica"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+15152896263" aria-label="Text Erica"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:erica.abellholland@gmail.com" aria-label="Email Erica"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Jan Wolford</span><span class="acts"><a class="act call" href="tel:+14026584220" aria-label="Call Jan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14026584220" aria-label="Text Jan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:Janwolford4220@gmail.com" aria-label="Email Jan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Julie Schrader</span><span class="acts"><a class="act call" href="tel:+13168419205" aria-label="Call Julie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+13168419205" aria-label="Text Julie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:lefty.13@att.net" aria-label="Email Julie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Karen Roof</span><span class="acts"><a class="act call" href="tel:+19134813891" aria-label="Call Karen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+19134813891" aria-label="Text Karen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:kroof54@gmail.com" aria-label="Email Karen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Karla Pankovits</span><span class="acts"><a class="act call" href="tel:+14172947680" aria-label="Call Karla"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14172947680" aria-label="Text Karla"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:karlatablerocklake@gmail.com" aria-label="Email Karla"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Kim Cahill</span><span class="acts"><a class="act call" href="tel:+13143699043" aria-label="Call Kim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+13143699043" aria-label="Text Kim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:Kacahill26@gmail.com" aria-label="Email Kim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Lissa Hamblen</span><span class="acts"><a class="act call" href="tel:+14178183163" aria-label="Call Lissa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14178183163" aria-label="Text Lissa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:newzstory@sbcglobal.net" aria-label="Email Lissa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Lori Konkol</span><span class="acts"><a class="act call" href="tel:+14172945719" aria-label="Call Lori"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14172945719" aria-label="Text Lori"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:lkonkol356@gmail.com" aria-label="Email Lori"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Lori Tuepker</span><span class="acts"><a class="act call" href="tel:+13142490664" aria-label="Call Lori"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+13142490664" aria-label="Text Lori"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:latuepker@gmail.com" aria-label="Email Lori"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Marty Schmitt</span><span class="acts"><a class="act call" href="tel:+14175980885" aria-label="Call Marty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14175980885" aria-label="Text Marty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><span class="act ghost" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></span></span></li>
-          <li class="player"><span class="pname">Maureen Ellenberger</span><span class="acts"><a class="act call" href="tel:+13145170358" aria-label="Call Maureen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+13145170358" aria-label="Text Maureen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:maureenellenberger@yahoo.com" aria-label="Email Maureen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Mindy Schroeder</span><span class="acts"><a class="act call" href="tel:+14175980897" aria-label="Call Mindy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14175980897" aria-label="Text Mindy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:eureka4me@outlook.com" aria-label="Email Mindy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Pam Collard</span><span class="acts"><a class="act call" href="tel:+14178602796" aria-label="Call Pam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14178602796" aria-label="Text Pam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:pam.collard@yahoo.com" aria-label="Email Pam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Polly Linneman</span><span class="acts"><a class="act call" href="tel:+14174969586" aria-label="Call Polly"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14174969586" aria-label="Text Polly"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:Plinneman@yahoo.com" aria-label="Email Polly"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Rose Schwarte</span><span class="acts"><a class="act call" href="tel:+14173316050" aria-label="Call Rose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+14173316050" aria-label="Text Rose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:roseschwarte@yahoo.com" aria-label="Email Rose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-          <li class="player"><span class="pname">Virginia Pennington</span><span class="acts"><a class="act call" href="tel:+18168358906" aria-label="Call Virginia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a><a class="act text" href="sms:+18168358906" aria-label="Text Virginia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></a><a class="act mail" href="mailto:vlpenncarving@gmail.com" aria-label="Email Virginia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg></a></span></li>
-      </ul>
+      <div class="roster-head">
+        <span class="section-label">The roster</span>
+        <button class="edit-toggle" id="editToggle" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+          <span id="editLabel">Edit list</span>
+        </button>
+      </div>
+
+      <div class="edit-note">
+        <strong>Save to cloud</strong> updates the roster for everyone instantly.
+        <strong>Download .vcf</strong> gives you a fresh file for the printed QR poster.
+      </div>
+      <div class="edit-bar">
+        <button class="ebtn add-p" id="addPlayer" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Add player
+        </button>
+        <button class="ebtn dl" id="downloadVcf" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>Download .vcf
+        </button>
+        <button class="ebtn cloud" id="saveCloud" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.3A5 5 0 0 0 7 9a4 4 0 0 0 .5 8H18a3.5 3.5 0 0 0 0-7z"/><path d="M12 11v5m0 0 2-2m-2 2-2-2"/></svg>Save to cloud
+        </button>
+      </div>
+
+      <ul class="roster" id="roster"></ul>
     </div>
 
     <div class="share">
-      <div class="section-label" style="margin-top:0">Pass it on</div>
+      <div class="section-label" style="display:block;margin-bottom:14px">Pass it on</div>
       <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATYAAAE2CAIAAABk3in+AAAF8UlEQVR4nO3dvZGkNRRAUYbaFEgBi/wjWYsUCKKxMVAvJd7q6utz3Kn+nb4l59XT1+v1+gWo+vX0GwBWJAppEoU0iUKaRCFNopAmUUiTKKRJFNK+rf/82+9//Jz38dP89ef3xV/Xn3fnsTvWr7t243/w1Pd8yvrzOkUhTaKQJlFIkyikSRTSJAppEoU0iUKaRCHtzXTR2s7Uy5y56ZOdZ577rube1c6s1VpzEmvOzud1ikKaRCFNopAmUUiTKKRJFNIkCmkShTSJQtrWdNHajRMkzYmZU9t6mt/Gjht/k05RSJMopEkU0iQKaRKFNIlCmkQhTaKQJlFIG5wuulFzD9CNe48+7XazOU5RSJMopEkU0iQKaRKFNIlCmkQhTaKQJlFIM130DzszMad2F+3MHp36vM37y5qcopAmUUiTKKRJFNIkCmkShTSJQppEIU2ikDY4XfS8CZK57USnHrs2t39o7j2v3fibdIpCmkQhTaKQJlFIkyikSRTSJAppEoU0iULa1nTR8+63OjX1csqNk0lrz/tNOkUhTaKQJlFIkyikSRTSJAppEoU0iUKaRCHtzXTR8+ZpdsxNrpyaxTn1ujs+7TfpFIU0iUKaRCFNopAmUUiTKKRJFNIkCmkShbQ300VzN3atNadtdjS3Ip2aH9r5vHPfZPPX7hSFNIlCmkQhTaKQJlFIkyikSRTSJAppEoW0r9frNfTUp6aLmo895cYZr1Oas2VOUUiTKKRJFNIkCmkShTSJQppEIU2ikCZRSHszXdScILHZ6Mcfu2Yi6v967NrO9+wUhTSJQppEIU2ikCZRSJMopEkU0iQKaRKFtK3dRZ+2y+d5mjeyPW/7lN1F8FgShTSJQppEIU2ikCZRSJMopEkU0iQKaYPTRWs7kxynthPduBVp7XmfaEdzC5RTFNIkCmkShTSJQppEIU2ikCZRSJMopEkU0rZuRpubELpx2ubUvFRzjud5v5xTk1hOUUiTKKRJFNIkCmkShTSJQppEIU2ikCZRSPu2/vPcrEZzCmRnd9Hc1Mup275O3SK387rPm9NyikKaRCFNopAmUUiTKKRJFNIkCmkShTSJQtrWzWhrp2ZT5m43a07qPG/26NTkWXOjklMU0iQKaRKFNIlCmkQhTaKQJlFIkyikSRTS3uwuOrUHaO6Z597V3OvO7T1quvE/OMcpCmkShTSJQppEIU2ikCZRSJMopEkU0iQKaVu7i5p7gOamT+acmj1au/F1m78Nu4vgsSQKaRKFNIlCmkQhTaKQJlFIkyikSRTS3kwXmS/5cc0b2eY0dzU1d2LtcIpCmkQhTaKQJlFIkyikSRTSJAppEoU0iULam5vRnjfXsqP5bayd2tXU3BF1I6copEkU0iQKaRKFNIlCmkQhTaKQJlFIkyikHbsZbUdzS9CN38aNt8g12V0EH0qikCZRSJMopEkU0iQKaRKFNIlCmkQhbWu66Hk+bZ6mOV106sa9U9af1ykKaRKFNIlCmkQhTaKQJlFIkyikSRTSJAppb25Ga05j7NiZXGlOvcztW2rOHjXvxZt7V05RSJMopEkU0iQKaRKFNIlCmkQhTaKQJlFIezNdtDY3ybFjbuplbgao+U3uaN5ed8rO7JFTFNIkCmkShTSJQppEIU2ikCZRSJMopEkU0rami9bmpnxu3E8zN0/TfOYdzRvZTv33naKQJlFIkyikSRTSJAppEoU0iUKaRCFNopA2OF10o7n7rXamT07ND83dubZjbo5nbn7IzWjwWBKFNIlCmkQhTaKQJlFIkyikSRTSJApppov+g+bEzKlpm7UbJ5PWTs0eOUUhTaKQJlFIkyikSRTSJAppEoU0iUKaRCFtcLpo7v6yOc2bwnac2riz1twRNffMdhfBY0kU0iQKaRKFNIlCmkQhTaKQJlFIkyikbU0X3Thts3bqprDmhqFTO5N23Pie15yikCZRSJMopEkU0iQKaRKFNIlCmkQhTaKQ9vV6vU6/B+BfOUUhTaKQJlFIkyikSRTSJAppEoU0iUKaRCHtbyfzLrYvOy7aAAAAAElFTkSuQmCC" alt="QR code linking to this page">
       <p>Point a phone camera at the code, or send the link to another player.</p>
       <button class="share-btn" id="share" type="button">
@@ -216,22 +183,192 @@
     </div>
 
     <footer>
-      Tap a player anytime to call, text, or email.<br>
+      Tap a player to call, text, or email.<br>
       Keep your paddle close. <span class="net">See you on the court.</span>
     </footer>
   </div>
 
+  <div id="toast"></div>
+
 <script>
-  const btn = document.getElementById('share');
-  const data = { title:'The Picklettes', text:'Add the Picklettes roster to your phone', url: location.href };
-  btn.addEventListener('click', async () => {
-    try {
-      if (navigator.share) { await navigator.share(data); }
-      else {
-        await navigator.clipboard.writeText(location.href);
-        btn.lastChild.textContent = ' Link copied';
+  const PREFIX = "picklettes_";
+  let CONTACTS = [{"first":"Barb","last":"Tongate","tel":"18168102055","email":"btongate@me.com"},{"first":"Beverly","last":"Cleveland","tel":"13148057248","email":"beverlyjcleveland@gmail.com"},{"first":"Cathy","last":"Morton","tel":"14173391128","email":"alandcathy82@gmail.com"},{"first":"Cindy","last":"Frenzel","tel":"14172096912","email":"ckfjaf@gmail.com"},{"first":"Debbie","last":"Page","tel":"14172394803","email":"debbiepage13@gmail.com"},{"first":"Dolores","last":"Coble","tel":"14172590224","email":"dolorescoble@me.com"},{"first":"Erica","last":"Holland","tel":"15152896263","email":"erica.abellholland@gmail.com"},{"first":"Jan","last":"Wolford","tel":"14026584220","email":"Janwolford4220@gmail.com"},{"first":"Julie","last":"Schrader","tel":"13168419205","email":"lefty.13@att.net"},{"first":"Karen","last":"Roof","tel":"19134813891","email":"kroof54@gmail.com"},{"first":"Karla","last":"Pankovits","tel":"14172947680","email":"karlatablerocklake@gmail.com"},{"first":"Kim","last":"Cahill","tel":"13143699043","email":"Kacahill26@gmail.com"},{"first":"Lissa","last":"Hamblen","tel":"14178183163","email":"newzstory@sbcglobal.net"},{"first":"Lori","last":"Konkol","tel":"14172945719","email":"lkonkol356@gmail.com"},{"first":"Lori","last":"Tuepker","tel":"13142490664","email":"latuepker@gmail.com"},{"first":"Marty","last":"Schmitt","tel":"14175980885","email":""},{"first":"Maureen","last":"Ellenberger","tel":"13145170358","email":"maureenellenberger@yahoo.com"},{"first":"Mindy","last":"Schroeder","tel":"14175980897","email":"eureka4me@outlook.com"},{"first":"Pam","last":"Collard","tel":"14178602796","email":"pam.collard@yahoo.com"},{"first":"Polly","last":"Linneman","tel":"14174969586","email":"Plinneman@yahoo.com"},{"first":"Rose","last":"Schwarte","tel":"14173316050","email":"roseschwarte@yahoo.com"},{"first":"Virginia","last":"Pennington","tel":"18168358906","email":"vlpenncarving@gmail.com"}];
+  let editing = false;
+
+  // ---- Database (Firebase Firestore) ----
+  // Paste your Firebase web-app config below to turn on cloud sync.
+  const FIREBASE_CONFIG = {
+    apiKey:            "PASTE_API_KEY",
+    authDomain:        "PASTE_PROJECT.firebaseapp.com",
+    projectId:         "PASTE_PROJECT_ID",
+    storageBucket:     "PASTE_PROJECT.appspot.com",
+    messagingSenderId: "PASTE_SENDER_ID",
+    appId:             "PASTE_APP_ID"
+  };
+  let db = null;
+  try{
+    if(window.firebase && !String(FIREBASE_CONFIG.projectId).startsWith("PASTE")){
+      firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.firestore();
+    }
+  }catch(e){ console.warn("Firebase init skipped:", e); }
+  const dbOn = () => db !== null;
+
+  async function loadFromDB(){
+    if(!dbOn()) return false;
+    try{
+      const snap = await db.collection("picklettes").doc("roster").get();
+      if(snap.exists){
+        const arr = snap.data().contacts;
+        if(Array.isArray(arr) && arr.length){ CONTACTS = arr; return true; }
       }
-    } catch (e) { /* user dismissed — no action needed */ }
+    }catch(e){ console.warn("DB read failed:", e); }
+    return false;
+  }
+  async function saveToDB(){
+    if(!dbOn()){ toast("Add your Firebase config to enable cloud save"); return; }
+    try{
+      await db.collection("picklettes").doc("roster")
+        .set({ contacts: CONTACTS, updated: Date.now() });
+      toast("Saved to cloud — everyone sees it now");
+    }catch(e){ toast("Save failed — check Firestore rules"); console.warn(e); }
+  }
+
+  const rosterEl = document.getElementById('roster');
+  const countEls = document.querySelectorAll('[data-count]');
+
+  const IC = {
+    call:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+    text:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>',
+    mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg>',
+    trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>'
+  };
+
+  const digits = t => (t||'').replace(/\D/g,'');
+  function fmtTel(t){ const d = digits(t).replace(/^1/,''); return d.length===10 ? `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}` : (t||''); }
+  function telHref(t){ const d = digits(t); return '+' + (d.length===10 ? '1'+d : d); }
+  const esc = s => (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  function viewRow(c){
+    const full = `${c.first||''} ${c.last||''}`.trim();
+    const tel = telHref(c.tel);
+    let acts = `<a class="act call" href="tel:${tel}" aria-label="Call ${esc(c.first)}">${IC.call}</a>`
+             + `<a class="act text" href="sms:${tel}" aria-label="Text ${esc(c.first)}">${IC.text}</a>`;
+    acts += c.email ? `<a class="act mail" href="mailto:${esc(c.email)}" aria-label="Email ${esc(c.first)}">${IC.mail}</a>`
+                    : `<span class="act ghost" aria-hidden="true">${IC.mail}</span>`;
+    return `<li class="player"><span class="pname">${esc(full)||'—'}</span><span class="acts">${acts}</span></li>`;
+  }
+  function editRow(c,i){
+    return `<li class="player edit">
+      <div class="fields">
+        <div class="two">
+          <input data-i="${i}" data-f="first" placeholder="First" value="${esc(c.first)}" autocomplete="off">
+          <input data-i="${i}" data-f="last" placeholder="Last" value="${esc(c.last)}" autocomplete="off">
+        </div>
+        <input data-i="${i}" data-f="tel" placeholder="Phone" inputmode="tel" value="${esc(fmtTel(c.tel))}" autocomplete="off">
+        <input data-i="${i}" data-f="email" placeholder="Email (optional)" inputmode="email" value="${esc(c.email)}" autocomplete="off">
+      </div>
+      <button class="del" data-del="${i}" type="button" aria-label="Remove player">${IC.trash}</button>
+    </li>`;
+  }
+  function render(){
+    rosterEl.innerHTML = CONTACTS.map((c,i)=> editing ? editRow(c,i) : viewRow(c)).join('');
+    countEls.forEach(e=> e.textContent = CONTACTS.length);
+    document.body.classList.toggle('editing', editing);
+    document.getElementById('editLabel').textContent = editing ? 'Done' : 'Edit list';
+  }
+
+  // load roster: database first, then the published file, then embedded fallback
+  (async function load(){
+    if(!(await loadFromDB())){
+      try{
+        const r = await fetch('pickleballsbc.vcf', {cache:'no-store'});
+        if(r.ok){ const p = parseVcf(await r.text()); if(p.length) CONTACTS = p; }
+      }catch(e){ /* local preview / offline — use embedded list */ }
+    }
+    render();
+  })();
+
+  function parseVcf(text){
+    return text.split(/BEGIN:VCARD/i).slice(1).map(b=>{
+      const grab = re => { const m = b.match(re); return m ? m[1].trim() : ''; };
+      const parts = grab(/[\r\n]N:([^\r\n]*)/i).split(';');
+      const strip = s => (s||'').replace(new RegExp('^'+PREFIX), '');
+      return {
+        last: strip(parts[0]), first: strip(parts[1]),
+        tel: grab(/[\r\n]TEL[^:]*:([^\r\n]*)/i),
+        email: grab(/[\r\n]EMAIL[^:]*:([^\r\n]*)/i)
+      };
+    }).filter(c => c.first || c.last);
+  }
+
+  function buildVcf(){
+    const NL = '\r\n';   // CRLF is required for iOS to import every card
+    return CONTACTS.filter(c => (c.first||c.last)).map(c=>{
+      const last = (c.last||'').trim(), first = (c.first||'').trim();
+      let v = 'BEGIN:VCARD'+NL+'VERSION:3.0'+NL;
+      v += `N:${PREFIX}${last};${first};;;`+NL;
+      v += `FN:${(first+' '+PREFIX+last).trim()}`+NL;
+      if(digits(c.tel)) v += `TEL;TYPE=CELL:${fmtTel(c.tel)}`+NL;
+      if((c.email||'').trim()) v += `EMAIL;TYPE=INTERNET:${c.email.trim()}`+NL;
+      v += 'CATEGORIES:pickleballsbc'+NL+'END:VCARD';
+      return v;
+    }).join(NL) + NL;
+  }
+  function vcfBlobUrl(){
+    return URL.createObjectURL(new Blob([buildVcf()], {type:'text/vcard;charset=utf-8'}));
+  }
+
+  let toastT;
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastT); toastT = setTimeout(()=> t.classList.remove('show'), 2200);
+  }
+
+  // ---- add all contacts (built live, CRLF, so every card imports) ----
+  document.getElementById('addAll').onclick = () => {
+    const url = vcfBlobUrl();
+    const a = document.createElement('a');
+    a.href = url; a.download = 'pickleballsbc.vcf';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=> URL.revokeObjectURL(url), 2000);
+  };
+
+  // ---- editing wiring ----
+  document.getElementById('editToggle').onclick = () => { editing = !editing; render(); };
+  document.getElementById('saveCloud').onclick = saveToDB;
+  document.getElementById('addPlayer').onclick = () => {
+    CONTACTS.push({first:'',last:'',tel:'',email:''}); render();
+    const inputs = rosterEl.querySelectorAll('input[data-f="first"]');
+    if(inputs.length) inputs[inputs.length-1].focus();
+    window.scrollBy({top:120, behavior:'smooth'});
+  };
+  document.getElementById('downloadVcf').onclick = () => {
+    const blob = new Blob([buildVcf()], {type:'text/vcard'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'pickleballsbc.vcf'; a.click();
+    setTimeout(()=> URL.revokeObjectURL(url), 1500);
+    toast('Downloaded pickleballsbc.vcf');
+  };
+  rosterEl.addEventListener('input', e => {
+    const t = e.target; if(t.dataset.i === undefined) return;
+    CONTACTS[+t.dataset.i][t.dataset.f] = t.value;
+    countEls.forEach(e=> e.textContent = CONTACTS.length);
+  });
+  rosterEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-del]'); if(!b) return;
+    CONTACTS.splice(+b.dataset.del, 1); render();
+  });
+
+  // ---- share ----
+  const sbtn = document.getElementById('share');
+  sbtn.addEventListener('click', async () => {
+    const data = { title:'The Picklettes', text:'Add the Picklettes roster to your phone', url: location.href };
+    try{
+      if(navigator.share){ await navigator.share(data); }
+      else { await navigator.clipboard.writeText(location.href); toast('Link copied'); }
+    }catch(e){}
   });
 </script>
 </body>
