@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Picklettes — Add the roster to your phone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --court:#0e6e7d;          /* deep court teal      */
+    --kitchen:#0a5560;        /* non-volley zone      */
+    --line:#ffffff;           /* court lines          */
+    --ball:#d9ec4b;           /* optic-yellow ball    */
+    --ball-edge:#b9cc36;
+    --ink:#11252b;            /* text                 */
+    --muted:#5d7178;
+    --bg:#eef3f1;             /* court-surface grey    */
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:"Inter",system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  .wrap{max-width:460px;margin:0 auto;padding:0 20px 56px}
+
+  /* ---------- HERO: a court seen from above ---------- */
+  .court-wrap{
+    margin:0 -20px 0;
+    padding:26px 20px 30px;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #1b8294 0%, var(--court) 55%, #0c5d6a 100%);
+    position:relative;overflow:hidden;
+  }
+  .eyebrow{
+    display:flex;gap:8px;align-items:center;justify-content:center;
+    color:#cfeef3;font-weight:600;font-size:12px;letter-spacing:.18em;
+    text-transform:uppercase;margin-bottom:14px;
+  }
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--ball)}
+  .court-svg{display:block;width:min(170px,46vw);margin:0 auto;filter:drop-shadow(0 14px 22px rgba(0,0,0,.28))}
+  .ball{transform-origin:center;animation:bounce 2.4s cubic-bezier(.5,0,.5,1) infinite}
+  @keyframes bounce{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-16px)}
+  }
+  h1{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+    color:#fff;text-align:center;line-height:.98;
+    font-size:clamp(38px,13vw,52px);letter-spacing:-.02em;margin:22px 0 8px;
+  }
+  .lede{text-align:center;color:#e3f4f6;font-size:17px;font-weight:500;max-width:22ch;margin:0 auto}
+
+  /* ---------- ACTION CARD ---------- */
+  .card{
+    background:var(--card);border-radius:22px;margin-top:-18px;position:relative;z-index:2;
+    padding:26px 22px;box-shadow:0 12px 34px rgba(14,110,125,.16);
+  }
+  .add{
+    display:flex;align-items:center;justify-content:center;gap:12px;
+    width:100%;border:none;cursor:pointer;text-decoration:none;
+    background:var(--ball);color:var(--ink);
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;
+    padding:18px 20px;border-radius:16px;
+    box-shadow:0 5px 0 var(--ball-edge);
+    transition:transform .08s ease, box-shadow .08s ease;
+  }
+  .add:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ball-edge)}
+  .add svg{flex:0 0 auto}
+  .count{text-align:center;color:var(--muted);font-size:14px;margin-top:12px}
+
+  .steps{list-style:none;margin:22px 0 4px;display:grid;gap:14px}
+  .steps li{display:flex;gap:14px;align-items:flex-start;font-size:16px}
+  .steps .num{
+    flex:0 0 auto;width:26px;height:26px;border-radius:50%;
+    background:var(--court);color:#fff;font-weight:700;font-size:14px;
+    display:grid;place-items:center;margin-top:1px;
+  }
+
+  /* ---------- ROSTER ---------- */
+  .section-label{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+    font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--court);
+    margin:34px 0 14px;text-align:center;
+  }
+  .roster{list-style:none;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .roster li{
+    background:#fff;border:1.5px solid #dbe7e4;border-radius:999px;
+    padding:7px 14px;font-size:15px;font-weight:500;color:var(--ink);
+  }
+
+  /* ---------- SHARE ---------- */
+  .share{
+    margin-top:30px;background:#fff;border-radius:22px;padding:24px 22px;text-align:center;
+    box-shadow:0 12px 34px rgba(14,110,125,.10);
+  }
+  .share img{width:150px;height:150px;border-radius:12px;border:1px solid #e6efec}
+  .share p{color:var(--muted);font-size:14px;margin:14px auto 16px;max-width:26ch}
+  .share-btn{
+    display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--court);
+    background:#fff;color:var(--court);font-weight:700;font-size:16px;
+    padding:12px 22px;border-radius:999px;cursor:pointer;
+  }
+  .share-btn:active{background:#f0f8f7}
+
+  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:30px;line-height:1.6}
+  footer .net{color:var(--court);font-weight:600}
+
+  @media (prefers-reduced-motion:reduce){.ball{animation:none}}
+</style>
+</head>
+<body>
+  <div class="court-wrap">
+    <div class="eyebrow"><span class="dot"></span>Table Rock Lake<span class="dot"></span></div>
+    <svg class="court-svg" viewBox="0 0 200 360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- playing surface -->
+      <rect x="0" y="0" width="200" height="360" rx="10" fill="var(--court)"/>
+      <!-- kitchen / non-volley zones -->
+      <rect x="14" y="138" width="172" height="40" fill="var(--kitchen)"/>
+      <rect x="14" y="182" width="172" height="40" fill="var(--kitchen)"/>
+      <!-- boundary -->
+      <rect x="14" y="14" width="172" height="332" fill="none" stroke="var(--line)" stroke-width="4"/>
+      <!-- net line -->
+      <line x1="6" y1="180" x2="194" y2="180" stroke="var(--line)" stroke-width="5"/>
+      <!-- kitchen lines -->
+      <line x1="14" y1="138" x2="186" y2="138" stroke="var(--line)" stroke-width="3"/>
+      <line x1="14" y1="222" x2="186" y2="222" stroke="var(--line)" stroke-width="3"/>
+      <!-- service centerlines (not through kitchen) -->
+      <line x1="100" y1="14" x2="100" y2="138" stroke="var(--line)" stroke-width="3"/>
+      <line x1="100" y1="222" x2="100" y2="346" stroke="var(--line)" stroke-width="3"/>
+      <!-- ball -->
+      <g class="ball">
+        <circle cx="138" cy="108" r="17" fill="var(--ball)" stroke="var(--ball-edge)" stroke-width="2"/>
+        <g fill="#9aab2e">
+          <circle cx="131" cy="101" r="2.1"/><circle cx="142" cy="100" r="2.1"/>
+          <circle cx="146" cy="110" r="2.1"/><circle cx="137" cy="116" r="2.1"/>
+          <circle cx="128" cy="111" r="2.1"/><circle cx="139" cy="108" r="2.1"/>
+        </g>
+      </g>
+    </svg>
+    <h1>The Picklettes</h1>
+    <p class="lede">Our whole roster, saved to your phone in one tap.</p>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <a class="add" href="pickleballsbc.vcf" download>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add all 22 contacts
+      </a>
+      <p class="count">Already have a few? Your phone skips the duplicates.</p>
+
+      <ol class="steps">
+        <li><span class="num">1</span><span>Tap the button above.</span></li>
+        <li><span class="num">2</span><span>Your phone opens the contact card.</span></li>
+        <li><span class="num">3</span><span>Choose <strong>Add All Contacts</strong> — done.</span></li>
+      </ol>
+
+      <div class="section-label">The roster</div>
+      <ul class="roster">
+          <li>Barb</li>
+          <li>Beverly</li>
+          <li>Cathy</li>
+          <li>Cindy</li>
+          <li>Debbie</li>
+          <li>Dolores</li>
+          <li>Erica</li>
+          <li>Jan</li>
+          <li>Julie</li>
+          <li>Karen</li>
+          <li>Karla</li>
+          <li>Kim</li>
+          <li>Lissa</li>
+          <li>Lori K.</li>
+          <li>Lori T.</li>
+          <li>Marty</li>
+          <li>Maureen</li>
+          <li>Mindy</li>
+          <li>Pam</li>
+          <li>Polly</li>
+          <li>Rose</li>
+          <li>Virginia</li>
+      </ul>
+    </div>
+
+    <div class="share">
+      <div class="section-label" style="margin-top:0">Pass it on</div>
+      <img src="data:image/png;base64,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" alt="QR code linking to this page">
+      <p>Point a phone camera at the code, or send the link to another player.</p>
+      <button class="share-btn" id="share" type="button">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+        Share this page
+      </button>
+    </div>
+
+    <footer>
+      Tap a player anytime to call, text, or email.<br>
+      Keep your paddle close. <span class="net">See you on the court.</span>
+    </footer>
+  </div>
+
+<script>
+  const btn = document.getElementById('share');
+  const data = { title:'The Picklettes', text:'Add the Picklettes roster to your phone', url: location.href };
+  btn.addEventListener('click', async () => {
+    try {
+      if (navigator.share) { await navigator.share(data); }
+      else {
+        await navigator.clipboard.writeText(location.href);
+        btn.lastChild.textContent = ' Link copied';
+      }
+    } catch (e) { /* user dismissed — no action needed */ }
+  });
+</script>
+</body>
+</html>
