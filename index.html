@@ -151,18 +151,6 @@
 
   <div class="wrap">
     <div class="card">
-      <button class="add" id="addAll" type="button">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-        Add all <span data-count>22</span> contacts
-      </button>
-      <p class="count">Already have a few? Your phone skips the duplicates.</p>
-
-      <ol class="steps">
-        <li><span class="num">1</span><span>Tap the button above.</span></li>
-        <li><span class="num">2</span><span>Your phone opens the contact card.</span></li>
-        <li><span class="num">3</span><span>Choose <strong>Add All Contacts</strong> — done.</span></li>
-      </ol>
-
       <div class="roster-head">
         <span class="section-label">The roster</span>
         <button class="edit-toggle" id="editToggle" type="button">
@@ -200,6 +188,20 @@
       </button>
     </div>
 
+    <div class="card" style="margin-top:30px">
+      <button class="add" id="addAll" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add all <span data-count>22</span> contacts
+      </button>
+      <p class="count">Already have a few? Your phone skips the duplicates.</p>
+
+      <ol class="steps">
+        <li><span class="num">1</span><span>Tap the button above.</span></li>
+        <li><span class="num">2</span><span>Your phone opens the contact card.</span></li>
+        <li><span class="num">3</span><span>Choose <strong>Add All Contacts</strong> — done.</span></li>
+      </ol>
+    </div>
+
     <footer>
       Tap a player to call, text, or email.<br>
       Keep your paddle close. <span class="net">See you on the court.</span>
@@ -229,7 +231,7 @@
   // ---- Database (Firebase Firestore) ----
   // Paste your Firebase web-app config below to turn on cloud sync.
   const FIREBASE_CONFIG = {
-     apiKey: "AIzaSyA6AxxSBkBhFBi_Bf94P-bE24b0x4WS9K8",
+  apiKey: "AIzaSyA6AxxSBkBhFBi_Bf94P-bE24b0x4WS9K8",
   authDomain: "picklettes.firebaseapp.com",
   projectId: "picklettes",
   storageBucket: "picklettes.firebasestorage.app",
