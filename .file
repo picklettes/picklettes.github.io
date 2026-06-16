@@ -1,0 +1,16 @@
+picklettes.github.io/pickleballsbc.vcf
+
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyA6AxxSBkBhFBi_Bf94P-bE24b0x4WS9K8",
+  authDomain: "picklettes.firebaseapp.com",
+  projectId: "picklettes",
+  storageBucket: "picklettes.firebasestorage.app",
+  messagingSenderId: "1058013024748",
+  appId: "1:1058013024748:web:6e3106b1295d67d5e2b0c9",
+  measurementId: "G-C8WWNNKTX8"
+};
+
+
+crypto.subtle.digest('SHA-256', new TextEncoder().encode('fbc26'))
+  .then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
